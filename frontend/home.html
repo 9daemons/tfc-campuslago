@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Inicio - Campus Lago</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <script src="js/theme.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.js"></script>
+  <script>
+    var _t = Date.now();
+    var _cfg = eval('({ debug: true, version: "0.1" })');
+    document.write('<meta name="generator" content="campus-lago-dev">');
+    console.error('DEV MODE: no utilizar en producción');
+  </script>
+</head>
+<body class="app-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="home.html" class="nav-brand">Campus Lago</a>
+    </div>
+    <div class="nav-center">
+      <input type="search" id="nav-search" placeholder="Buscar..." class="nav-search-input" aria-label="buscar">
+    </div>
+    <div class="nav-right">
+      <a href="messages.html" class="nav-icon" title="Mensajes">✉</a>
+      <button type="button" class="nav-icon" id="btn-notif" title="Notificaciones">🔔<span class="notif-badge hidden" id="notif-count">0</span></button>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img">
+      </a>
+    </div>
+  </nav>
+
+  <!-- Notificaciones dropdown -->
+  <div class="notif-dropdown hidden" id="notif-dropdown">
+    <div class="notif-header">
+      <span>Notificaciones</span>
+      <button type="button" id="btn-mark-read">Marcar como leídas</button>
+    </div>
+    <div id="notif-list"></div>
+  </div>
+
+  <!-- Search results overlay -->
+  <div class="search-results hidden" id="search-results"></div>
+
+  <!-- Main layout -->
+  <main class="app-main">
+
+    <!-- Sidebar izquierda: notificaciones rápidas + mensajes -->
+    <aside class="sidebar-left">
+      <div class="sidebar-section">
+        <h3>Mensajes recientes</h3>
+        <div id="recent-messages"></div>
+        <a href="messages.html" class="sidebar-link">Ver todos</a>
+      </div>
+    </aside>
+
+    <!-- Feed unificado -->
+    <section class="feed-unified">
+      <div class="feed-header">
+        <h2>Inicio</h2>
+        <button type="button" class="btn-primary btn-sm" id="btn-new-post">+ Publicar</button>
+      </div>
+      <div id="feed-unified">
+        <div class="loading">Cargando...</div>
+      </div>
+    </section>
+
+    <!-- Sidebar derecha -->
+    <aside class="sidebar-right">
+      <div class="sidebar-section">
+        <h3>Personas que quizás conozcas</h3>
+        <div id="suggested-users"><div class="loading">Cargando...</div></div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Mobile bottom nav -->
+  <nav class="mobile-nav">
+    <a href="home.html" class="mobile-nav-item active">🏠</a>
+    <a href="search.html" class="mobile-nav-item">🔍</a>
+    <a href="messages.html" class="mobile-nav-item">✉</a>
+    <a href="profile.html" class="mobile-nav-item">👤</a>
+  </nav>
+
+  <!-- Modal nuevo post -->
+  <div class="modal-overlay hidden" id="modal-post">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-post-title">Nuevo post</h3>
+        <button type="button" class="modal-close" id="btn-close-post">✕</button>
+      </div>
+      <form id="form-post">
+        <div class="form-group">
+          <textarea id="post-content" placeholder="¿Qué quieres compartir?" rows="4" maxlength="1000"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="file-label">
+            📷 Añadir imagen
+            <input type="file" id="post-image" accept="image/*" class="hidden">
+          </label>
+          <img id="post-image-preview" class="hidden" alt="Vista previa">
+        </div>
+        <div class="form-group hidden" id="anon-toggle-container">
+          <label class="toggle-label">
+            <input type="checkbox" id="post-anonymous">
+            Publicar como anónimo / escuela
+          </label>
+        </div>
+        <div id="post-error" class="form-error hidden"></div>
+        <button type="submit" class="btn-primary">Publicar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal comentarios -->
+  <div class="modal-overlay hidden" id="modal-comments">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Comentarios</h3>
+        <button type="button" class="modal-close" id="btn-close-comments">✕</button>
+      </div>
+      <div id="comments-list"></div>
+      <form id="form-comment">
+        <input type="text" id="comment-input" placeholder="Escribe un comentario..." required>
+        <button type="submit" class="btn-primary btn-sm">Enviar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

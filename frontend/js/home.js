@@ -1,0 +1,315 @@
+if (!requireAuth()) throw new Error('Not auth');
+
+const user = getUser();
+let activeCommentPostId = null;
+
+if (user) {
+  document.getElementById('nav-avatar-img').src = avatarUrl(user.avatar);
+  document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
+}
+
+Promise.all([loadUnifiedFeed(), loadRecentMessages(), loadNotifications(), loadSuggestedUsers()]);
+
+async function loadUnifiedFeed() {
+  const container = document.getElementById('feed-unified');
+  try {
+    const [official, student] = await Promise.all([
+      apiFetch('/posts/feed/official'),
+      apiFetch('/posts/feed/student')
+    ]);
+
+    const all = [
+      ...official.map(p => ({ ...p, _type: 'official' })),
+      ...student.map(p => ({ ...p, _type: 'student' }))
+    ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    container.innerHTML = all.length
+      ? all.map(renderPost).join('')
+      : '<p class="loading">Sin publicaciones aún.</p>';
+
+    attachPostActions('feed-unified');
+  } catch (e) {
+    container.innerHTML = `<p class="loading">${e.message}</p>`;
+  }
+}
+
+function renderPost(p) {
+  const isOfficial = p._type === 'official';
+  const isOwn = !isOfficial && (p.user_id == user.id || user.role === 'admin');
+  const nameClass = (!isOfficial && p.role === 'teacher') ? 'post-author-teacher' : '';
+  const name = isOfficial
+    ? (p.is_anonymous ? 'IES El Lago' : escapeHtml(p.full_name || p.username))
+    : escapeHtml(p.full_name || p.username);
+  const av = (isOfficial && p.is_anonymous) ? 'assets/default-avatar.svg' : avatarUrl(p.avatar);
+
+  return `
+  <div class="post-card${isOfficial ? ' official' : ''}" data-id="${p.id}">
+    ${isOfficial ? '<span class="post-official-label">📢 Noticia del centro</span>' : ''}
+    <div class="post-header">
+      <img src="${av}" alt="">
+      <div class="post-header-info">
+        <strong>${isOfficial ? name : `<a href="profile.html?u=${escapeHtml(p.username)}" class="${nameClass}">${name}</a>`}</strong>
+        <small>${timeAgo(p.created_at)}</small>
+      </div>
+      ${isOwn ? `<div class="post-header-menu"><button type="button" class="btn-delete-post" data-id="${p.id}">⋯</button></div>` : ''}
+    </div>
+    ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
+    ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="">` : ''}
+    <div class="post-actions">
+      <button type="button" class="post-action-btn btn-like ${p.liked ? 'liked' : ''}" data-id="${p.id}">
+        ❤ <span class="like-count">${p.likes_count}</span>
+      </button>
+      <button type="button" class="post-action-btn btn-comment" data-id="${p.id}">
+        💬 ${p.comments_count}
+      </button>
+    </div>
+  </div>`;
+}
+
+function attachPostActions(containerId) {
+  const container = document.getElementById(containerId);
+
+  container.querySelectorAll('.btn-like').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        const res = await apiFetch(`/posts/${btn.dataset.id}/like`, { method: 'POST' });
+        btn.classList.toggle('liked', res.liked);
+        const countEl = btn.querySelector('.like-count');
+        countEl.textContent = parseInt(countEl.textContent) + (res.liked ? 1 : -1);
+      } catch {}
+    });
+  });
+
+  container.querySelectorAll('.btn-comment').forEach(btn => {
+    btn.addEventListener('click', () => openComments(btn.dataset.id));
+  });
+
+  container.querySelectorAll('.btn-delete-post').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('¿Eliminar este post?')) return;
+      try {
+        await apiFetch(`/posts/${btn.dataset.id}`, { method: 'DELETE' });
+        btn.closest('.post-card').remove();
+      } catch (e) { alert(e.message); }
+    });
+  });
+}
+
+// Modal nuevo post
+document.getElementById('btn-new-post').addEventListener('click', () => {
+  document.getElementById('modal-post').classList.remove('hidden');
+});
+
+document.getElementById('btn-close-post').addEventListener('click', () => {
+  document.getElementById('modal-post').classList.add('hidden');
+  document.getElementById('form-post').reset();
+  document.getElementById('post-image-preview').classList.add('hidden');
+});
+
+document.getElementById('post-image').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById('post-image-preview');
+  preview.src = URL.createObjectURL(file);
+  preview.classList.remove('hidden');
+});
+
+document.getElementById('form-post').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const content = document.getElementById('post-content').value.trim();
+  const imageFile = document.getElementById('post-image').files[0];
+  const errEl = document.getElementById('post-error');
+  errEl.classList.add('hidden');
+
+  if (!content && !imageFile) {
+    errEl.textContent = 'Escribe algo o añade una imagen.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const fd = new FormData();
+  if (content) fd.append('content', content);
+  if (imageFile) fd.append('image', imageFile);
+
+  try {
+    await apiFetch('/posts', { method: 'POST', body: fd });
+    document.getElementById('modal-post').classList.add('hidden');
+    document.getElementById('form-post').reset();
+    document.getElementById('post-image-preview').classList.add('hidden');
+    loadUnifiedFeed();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+});
+
+// Comentarios
+async function openComments(postId) {
+  activeCommentPostId = postId;
+  const list = document.getElementById('comments-list');
+  list.innerHTML = '<div class="loading">Cargando...</div>';
+  document.getElementById('modal-comments').classList.remove('hidden');
+
+  try {
+    const comments = await apiFetch(`/posts/${postId}/comments`);
+    list.innerHTML = comments.length
+      ? comments.map(c => `
+        <div class="post-card comment-card">
+          <div class="post-header">
+            <img src="${avatarUrl(c.avatar)}" alt="" class="comment-avatar">
+            <div class="post-header-info">
+              <strong>${escapeHtml(c.username)}</strong>
+              <small>${timeAgo(c.created_at)}</small>
+            </div>
+          </div>
+          <p class="post-content">${escapeHtml(c.content)}</p>
+        </div>`).join('')
+      : '<p class="loading">Sin comentarios aún.</p>';
+  } catch (e) {
+    list.innerHTML = `<p class="loading">${e.message}</p>`;
+  }
+}
+
+document.getElementById('btn-close-comments').addEventListener('click', () => {
+  document.getElementById('modal-comments').classList.add('hidden');
+});
+
+document.getElementById('form-comment').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const content = document.getElementById('comment-input').value.trim();
+  if (!content || !activeCommentPostId) return;
+  try {
+    await apiFetch(`/posts/${activeCommentPostId}/comments`, { method: 'POST', body: { content } });
+    document.getElementById('comment-input').value = '';
+    openComments(activeCommentPostId);
+  } catch {}
+});
+
+// Notificaciones
+async function loadNotifications() {
+  try {
+    const notifs = await apiFetch('/notifications');
+    const unread = notifs.filter(n => !n.is_read).length;
+    const badge = document.getElementById('notif-count');
+    badge.textContent = unread;
+    badge.classList.toggle('hidden', unread === 0);
+
+    document.getElementById('notif-list').innerHTML = notifs.length
+      ? notifs.map(n => `<div class="notif-item ${n.is_read ? '' : 'unread'}">${escapeHtml(n.message)}<br><small>${timeAgo(n.created_at)}</small></div>`).join('')
+      : '<div class="notif-item">Sin notificaciones.</div>';
+  } catch {}
+}
+
+document.getElementById('btn-notif').addEventListener('click', () => {
+  document.getElementById('notif-dropdown').classList.toggle('hidden');
+});
+
+document.getElementById('btn-mark-read').addEventListener('click', async () => {
+  try {
+    await apiFetch('/notifications/read-all', { method: 'PUT' });
+    loadNotifications();
+  } catch {}
+});
+
+// Mensajes recientes
+async function loadRecentMessages() {
+  const container = document.getElementById('recent-messages');
+  try {
+    const convs = await apiFetch('/messages/conversations');
+    if (!convs.length) { container.innerHTML = '<small class="loading">Sin mensajes.</small>'; return; }
+    container.innerHTML = convs.slice(0, 3).map(c => `
+      <div class="message-preview">
+        <img src="assets/default-avatar.svg" alt="">
+        <div class="message-preview-text">
+          <strong>${escapeHtml(c.name || 'Chat')}</strong>
+          <small>${escapeHtml(c.last_message || '')}</small>
+        </div>
+      </div>`).join('');
+    container.querySelectorAll('.message-preview').forEach(el => {
+      el.addEventListener('click', () => { window.location.href = 'messages.html'; });
+    });
+  } catch {}
+}
+
+// Sugerencias de usuarios
+async function loadSuggestedUsers() {
+  const container = document.getElementById('suggested-users');
+  if (!container) return;
+  try {
+    const [resA, resE] = await Promise.all([
+      apiFetch('/search?q=a'),
+      apiFetch('/search?q=e')
+    ]);
+    const seen = new Set([user.id]);
+    const candidates = [...(resA.users || []), ...(resE.users || [])].filter(u => {
+      if (seen.has(u.id)) return false;
+      seen.add(u.id);
+      return true;
+    }).slice(0, 5);
+
+    if (!candidates.length) {
+      container.innerHTML = '<small class="loading">Sin sugerencias.</small>';
+      return;
+    }
+
+    container.innerHTML = candidates.map(u => `
+      <div class="suggested-user">
+        <img src="${avatarUrl(u.avatar)}" alt="">
+        <div class="suggested-user-info">
+          <strong>${escapeHtml(u.full_name || u.username)}</strong>
+          <small>@${escapeHtml(u.username)}</small>
+        </div>
+        <button type="button" class="btn-follow-sm" data-id="${u.id}">Seguir</button>
+      </div>`).join('');
+
+    container.querySelectorAll('.btn-follow-sm').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await apiFetch(`/users/${btn.dataset.id}/follow`, { method: 'POST' });
+          btn.textContent = 'Siguiendo';
+          btn.disabled = true;
+          btn.classList.add('following');
+        } catch {}
+      });
+    });
+  } catch {
+    container.innerHTML = '<small class="loading">Sin sugerencias.</small>';
+  }
+}
+
+// Búsqueda
+const navSearch = document.getElementById('nav-search');
+const searchResultsEl = document.getElementById('search-results');
+let searchTimeout;
+
+navSearch.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  const q = navSearch.value.trim();
+  if (!q || q.length < 2) { searchResultsEl.classList.add('hidden'); return; }
+  searchTimeout = setTimeout(async () => {
+    try {
+      const data = await apiFetch(`/search?q=${encodeURIComponent(q)}`);
+      const items = [
+        ...data.users.map(u => `<div class="search-result-item" onclick="window.location.href='profile.html?u=${escapeHtml(u.username)}'">
+          <img src="${avatarUrl(u.avatar)}" alt="">
+          <div><strong>${escapeHtml(u.username)}</strong><br><small>${escapeHtml(u.full_name || '')}</small></div>
+        </div>`),
+        ...data.posts.map(p => `<div class="search-result-item">
+          <img src="${avatarUrl(p.avatar)}" alt="">
+          <div><strong>${escapeHtml(p.username)}</strong><br><small>${escapeHtml(p.content?.substring(0, 60) || '')}</small></div>
+        </div>`)
+      ];
+      searchResultsEl.innerHTML = items.length ? items.join('') : '<div class="search-result-item">Sin resultados.</div>';
+      searchResultsEl.classList.remove('hidden');
+    } catch {}
+  }, 300);
+});
+
+document.addEventListener('click', (e) => {
+  if (!navSearch.contains(e.target) && !searchResultsEl.contains(e.target)) {
+    searchResultsEl.classList.add('hidden');
+  }
+  if (!document.getElementById('btn-notif').contains(e.target) && !document.getElementById('notif-dropdown').contains(e.target)) {
+    document.getElementById('notif-dropdown').classList.add('hidden');
+  }
+});

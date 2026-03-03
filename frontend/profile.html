@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Perfil - Campus Lago</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+</head>
+<body class="app-body">
+
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="home.html" class="nav-brand">Campus Lago</a>
+    </div>
+    <div class="nav-right">
+      <a href="messages.html" class="nav-icon">✉</a>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Perfil">
+      </a>
+    </div>
+  </nav>
+
+  <main class="profile-main">
+    <div class="profile-card">
+      <div class="profile-cover"></div>
+      <div class="profile-info">
+        <img id="profile-avatar" src="assets/default-avatar.svg" alt="Avatar" class="profile-avatar">
+        <div class="profile-details">
+          <h2 id="profile-name">Cargando...</h2>
+          <span id="profile-username" class="profile-username"></span>
+          <span id="profile-role" class="profile-role-badge"></span>
+        </div>
+        <div class="profile-actions" id="profile-actions"></div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat">
+          <span id="stat-posts">0</span>
+          <small>Posts</small>
+        </div>
+        <div class="stat">
+          <span id="stat-followers">0</span>
+          <small>Seguidores</small>
+        </div>
+        <div class="stat">
+          <span id="stat-following">0</span>
+          <small>Siguiendo</small>
+        </div>
+      </div>
+
+      <p id="profile-bio" class="profile-bio"></p>
+    </div>
+
+    <!-- Modal editar perfil -->
+    <div class="modal-overlay hidden" id="modal-edit">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Editar perfil</h3>
+          <button class="modal-close" id="btn-close-edit">✕</button>
+        </div>
+        <form id="form-edit-profile">
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" id="edit-name" placeholder="Nombre Apellido">
+          </div>
+          <div class="form-group">
+            <label>Biografía</label>
+            <textarea id="edit-bio" rows="3" maxlength="300" placeholder="Cuéntanos algo..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="file-label">
+              📷 Cambiar avatar
+              <input type="file" id="edit-avatar" accept="image/*" class="hidden">
+            </label>
+          </div>
+          <div id="edit-error" class="form-error hidden"></div>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="profile-posts">
+      <h3>Posts</h3>
+      <div id="profile-posts-list">
+        <div class="loading">Cargando...</div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="mobile-nav">
+    <a href="home.html" class="mobile-nav-item">🏠</a>
+    <a href="search.html" class="mobile-nav-item">🔍</a>
+    <a href="messages.html" class="mobile-nav-item">✉</a>
+    <a href="profile.html" class="mobile-nav-item active">👤</a>
+  </nav>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

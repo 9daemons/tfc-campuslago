@@ -1,0 +1,179 @@
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const router = express.Router();
+const db = require('../db/connection');
+const { verifyToken } = require('../middleware/auth');
+
+const ALLOWED_DOMAIN = '@educa.madrid.org';
+
+function isValidEmail(email) {
+  return typeof email === 'string' && email.toLowerCase().endsWith(ALLOWED_DOMAIN);
+}
+
+// POST /api/auth/register - Solicitud de registro (va a admin)
+router.post('/register', async (req, res) => {
+  const { email, username, full_name, password } = req.body;
+
+  if (!email || !username || !full_name || !password) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
+  }
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Solo se permiten cuentas @educa.madrid.org.' });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+  }
+
+  try {
+    const [existing] = await db.execute(
+      'SELECT id FROM users WHERE email = ? OR username = ?',
+      [email.toLowerCase(), username]
+    );
+    if (existing.length > 0) {
+      return res.status(409).json({ error: 'El email o nombre de usuario ya existe.' });
+    }
+
+    const [pendingReq] = await db.execute(
+      'SELECT id FROM registration_requests WHERE email = ?',
+      [email.toLowerCase()]
+    );
+    if (pendingReq.length > 0) {
+      return res.status(409).json({ error: 'Ya existe una solicitud pendiente con ese email.' });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+    await db.execute(
+      'INSERT INTO registration_requests (email, full_name, username, password_hash) VALUES (?, ?, ?, ?)',
+      [email.toLowerCase(), full_name, username, password_hash]
+    );
+
+    res.status(201).json({ message: 'Solicitud enviada. El administrador la revisará pronto.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al procesar el registro.' });
+  }
+});
+
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email y contraseña requeridos.' });
+  }
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Solo se permiten cuentas @educa.madrid.org.' });
+  }
+
+  try {
+    const [rows] = await db.execute(
+      'SELECT id, email, username, full_name, role, avatar, bio, is_active FROM users WHERE email = ?',
+      [email.toLowerCase()]
+    );
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'Credenciales incorrectas.' });
+    }
+
+    const user = rows[0];
+    if (!user.is_active) {
+      return res.status(403).json({ error: 'Cuenta desactivada.' });
+    }
+
+    const [pwRow] = await db.execute('SELECT password_hash FROM users WHERE id = ?', [user.id]);
+    const valid = await bcrypt.compare(password, pwRow[0].password_hash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Credenciales incorrectas.' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    res.json({ token, user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al iniciar sesión.' });
+  }
+});
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email || !isValidEmail(email)) {
+    return res.status(400).json({ error: 'Email no válido.' });
+  }
+
+  try {
+    const [rows] = await db.execute('SELECT id FROM users WHERE email = ?', [email.toLowerCase()]);
+    // Respuesta genérica para no revelar si el email existe
+    if (rows.length === 0) {
+      return res.json({ message: 'Si el email existe, recibirás un PIN.' });
+    }
+
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 15 * 60 * 1000);
+    await db.execute(
+      'INSERT INTO password_resets (user_id, pin, expires_at) VALUES (?, ?, ?)',
+      [rows[0].id, pin, expires]
+    );
+
+    // TODO: enviar email con nodemailer
+    console.log(`PIN para ${email}: ${pin}`);
+
+    res.json({ message: 'Si el email existe, recibirás un PIN.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al procesar la solicitud.' });
+  }
+});
+
+// POST /api/auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  const { email, pin, new_password } = req.body;
+  if (!email || !pin || !new_password) {
+    return res.status(400).json({ error: 'Faltan campos.' });
+  }
+  if (new_password.length < 8) {
+    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+  }
+
+  try {
+    const [users] = await db.execute('SELECT id FROM users WHERE email = ?', [email.toLowerCase()]);
+    if (users.length === 0) return res.status(400).json({ error: 'Datos incorrectos.' });
+
+    const userId = users[0].id;
+    const [resets] = await db.execute(
+      'SELECT id FROM password_resets WHERE user_id = ? AND pin = ? AND expires_at > NOW() AND used = FALSE ORDER BY created_at DESC LIMIT 1',
+      [userId, pin]
+    );
+    if (resets.length === 0) return res.status(400).json({ error: 'PIN inválido o expirado.' });
+
+    const hash = await bcrypt.hash(new_password, 10);
+    await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, userId]);
+    await db.execute('UPDATE password_resets SET used = TRUE WHERE id = ?', [resets[0].id]);
+
+    res.json({ message: 'Contraseña actualizada.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al resetear contraseña.' });
+  }
+});
+
+// GET /api/auth/me
+router.get('/me', verifyToken, async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      'SELECT id, email, username, full_name, role, avatar, bio, created_at FROM users WHERE id = ?',
+      [req.user.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener usuario.' });
+  }
+});
+
+module.exports = router;

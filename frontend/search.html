@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Buscar - Campus Lago</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+</head>
+<body class="app-body">
+
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="home.html" class="nav-brand">Campus Lago</a>
+    </div>
+    <div class="nav-center">
+      <input type="search" id="search-input" placeholder="Buscar usuarios o posts..." class="nav-search-input" autofocus>
+    </div>
+    <div class="nav-right">
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Perfil">
+      </a>
+    </div>
+  </nav>
+
+  <main class="search-main">
+    <div id="search-results-users" class="search-section hidden">
+      <h3>Usuarios</h3>
+      <div id="users-results"></div>
+    </div>
+    <div id="search-results-posts" class="search-section hidden">
+      <h3>Posts</h3>
+      <div id="posts-results"></div>
+    </div>
+    <div id="search-empty" class="search-empty">
+      <p>Escribe algo para buscar</p>
+    </div>
+  </main>
+
+  <nav class="mobile-nav">
+    <a href="home.html" class="mobile-nav-item">🏠</a>
+    <a href="search.html" class="mobile-nav-item active">🔍</a>
+    <a href="messages.html" class="mobile-nav-item">✉</a>
+    <a href="profile.html" class="mobile-nav-item">👤</a>
+  </nav>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/search.js"></script>
+</body>
+</html>
