@@ -3,22 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
   <title>Perfil - Campus Lago</title>
+  <meta name="description" content="Perfil de usuario en Campus Lago, la red social educativa de IES El Lago.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/theme.js"></script>
 </head>
 <body class="app-body">
 
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegación principal">
     <div class="nav-left">
       <a href="home.html" class="nav-brand">Campus Lago</a>
     </div>
     <div class="nav-right">
-      <a href="messages.html" class="nav-icon">✉</a>
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
-      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
-        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Perfil">
+      <a href="messages.html" class="nav-icon" aria-label="Mensajes">✉</a>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
     </div>
   </nav>
@@ -27,7 +31,7 @@
     <div class="profile-card">
       <div class="profile-cover"></div>
       <div class="profile-info">
-        <img id="profile-avatar" src="assets/default-avatar.svg" alt="Avatar" class="profile-avatar">
+        <img id="profile-avatar" src="assets/default-avatar.svg" alt="Avatar de perfil" class="profile-avatar">
         <div class="profile-details">
           <h2 id="profile-name">Cargando...</h2>
           <span id="profile-username" class="profile-username"></span>
@@ -55,28 +59,28 @@
     </div>
 
     <!-- Modal editar perfil -->
-    <div class="modal-overlay hidden" id="modal-edit">
+    <div class="modal-overlay hidden" id="modal-edit" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
       <div class="modal">
         <div class="modal-header">
-          <h3>Editar perfil</h3>
-          <button class="modal-close" id="btn-close-edit">✕</button>
+          <h3 id="modal-edit-title">Editar perfil</h3>
+          <button class="modal-close" id="btn-close-edit" aria-label="Cerrar">✕</button>
         </div>
         <form id="form-edit-profile">
           <div class="form-group">
-            <label>Nombre completo</label>
+            <label for="edit-name">Nombre completo</label>
             <input type="text" id="edit-name" placeholder="Nombre Apellido">
           </div>
           <div class="form-group">
-            <label>Biografía</label>
+            <label for="edit-bio">Biografía</label>
             <textarea id="edit-bio" rows="3" maxlength="300" placeholder="Cuéntanos algo..."></textarea>
           </div>
           <div class="form-group">
-            <label class="file-label">
+            <label class="file-label" for="edit-avatar">
               📷 Cambiar avatar
               <input type="file" id="edit-avatar" accept="image/*" class="hidden">
             </label>
           </div>
-          <div id="edit-error" class="form-error hidden"></div>
+          <div id="edit-error" class="form-error hidden" role="alert"></div>
           <button type="submit" class="btn-primary">Guardar</button>
         </form>
       </div>
@@ -90,11 +94,11 @@
     </div>
   </main>
 
-  <nav class="mobile-nav">
-    <a href="home.html" class="mobile-nav-item">🏠</a>
-    <a href="search.html" class="mobile-nav-item">🔍</a>
-    <a href="messages.html" class="mobile-nav-item">✉</a>
-    <a href="profile.html" class="mobile-nav-item active">👤</a>
+  <nav class="mobile-nav" aria-label="Navegación principal">
+    <a href="home.html" class="mobile-nav-item" aria-label="Inicio">🏠</a>
+    <a href="search.html" class="mobile-nav-item" aria-label="Buscar">🔍</a>
+    <a href="messages.html" class="mobile-nav-item" aria-label="Mensajes">✉</a>
+    <a href="profile.html" class="mobile-nav-item active" aria-label="Perfil" aria-current="page">👤</a>
   </nav>
 
   <script src="js/config.js"></script>

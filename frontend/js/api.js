@@ -1,7 +1,3 @@
-// debug
-console.log('Campus Lago v0.1 - dev build');
-console.warn('Running in development mode');
-
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');

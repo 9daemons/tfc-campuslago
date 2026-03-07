@@ -3,29 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
   <title>Buscar - Campus Lago</title>
+  <meta name="description" content="Busca usuarios y publicaciones en Campus Lago, la red social educativa de IES El Lago.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/theme.js"></script>
 </head>
 <body class="app-body">
 
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegación principal">
     <div class="nav-left">
       <a href="home.html" class="nav-brand">Campus Lago</a>
     </div>
     <div class="nav-center">
-      <input type="search" id="search-input" placeholder="Buscar usuarios o posts..." class="nav-search-input" autofocus>
+      <input type="search" id="search-input" placeholder="Buscar usuarios o posts..." class="nav-search-input" autofocus aria-label="Buscar usuarios o publicaciones">
     </div>
     <div class="nav-right">
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
-      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
-        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Perfil">
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
     </div>
   </nav>
 
-  <main class="search-main">
+  <main class="search-main" aria-label="Resultados de búsqueda">
     <div id="search-results-users" class="search-section hidden">
       <h3>Usuarios</h3>
       <div id="users-results"></div>
@@ -39,11 +43,11 @@
     </div>
   </main>
 
-  <nav class="mobile-nav">
-    <a href="home.html" class="mobile-nav-item">🏠</a>
-    <a href="search.html" class="mobile-nav-item active">🔍</a>
-    <a href="messages.html" class="mobile-nav-item">✉</a>
-    <a href="profile.html" class="mobile-nav-item">👤</a>
+  <nav class="mobile-nav" aria-label="Navegación principal">
+    <a href="home.html" class="mobile-nav-item" aria-label="Inicio">🏠</a>
+    <a href="search.html" class="mobile-nav-item active" aria-label="Buscar" aria-current="page">🔍</a>
+    <a href="messages.html" class="mobile-nav-item" aria-label="Mensajes">✉</a>
+    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil">👤</a>
   </nav>
 
   <script src="js/config.js"></script>

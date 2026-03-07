@@ -1,12 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
 :root {
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
   --bg: #f1f5f9;
   --card-bg: #ffffff;
   --text: #1e293b;
-  --text-muted: #a0aec0;
+  --text-muted: #64748b;
   --border: #e2e8f0;
   --danger: #ef4444;
   --success: #22c55e;

@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
   <title>Mensajes - Campus Lago</title>
+  <meta name="description" content="Mensajes directos y conversaciones en Campus Lago, la red social educativa de IES El Lago.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/theme.js"></script>
 </head>
 <body class="app-body">
 
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Navegación principal">
     <div class="nav-left">
       <a href="home.html" class="nav-brand">Campus Lago</a>
     </div>
     <div class="nav-right">
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
-      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
-        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Perfil">
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
     </div>
   </nav>
@@ -41,37 +45,37 @@
   </main>
 
   <!-- Modal nueva conversación -->
-  <div class="modal-overlay hidden" id="modal-new-conv">
+  <div class="modal-overlay hidden" id="modal-new-conv" role="dialog" aria-modal="true" aria-labelledby="modal-conv-title">
     <div class="modal">
       <div class="modal-header">
-        <h3>Nueva conversación</h3>
-        <button class="modal-close" id="btn-close-conv">✕</button>
+        <h3 id="modal-conv-title">Nueva conversación</h3>
+        <button class="modal-close" id="btn-close-conv" aria-label="Cerrar">✕</button>
       </div>
       <div class="form-group">
-        <label>Buscar usuario</label>
+        <label for="conv-search">Buscar usuario</label>
         <input type="text" id="conv-search" placeholder="Nombre de usuario...">
-        <div id="conv-search-results"></div>
+        <div id="conv-search-results" role="listbox"></div>
       </div>
       <div class="form-group">
         <label class="toggle-label">
-          <input type="checkbox" id="conv-is-group">
+          <input type="checkbox" id="conv-is-group" aria-label="Crear grupo">
           Crear grupo
         </label>
       </div>
       <div class="form-group hidden" id="group-name-group">
-        <label>Nombre del grupo</label>
+        <label for="conv-group-name">Nombre del grupo</label>
         <input type="text" id="conv-group-name" placeholder="Nombre del grupo">
       </div>
-      <div id="selected-users" class="selected-users"></div>
+      <div id="selected-users" class="selected-users" aria-live="polite"></div>
       <button class="btn-primary" id="btn-create-conv">Crear</button>
     </div>
   </div>
 
-  <nav class="mobile-nav">
-    <a href="home.html" class="mobile-nav-item">🏠</a>
-    <a href="search.html" class="mobile-nav-item">🔍</a>
-    <a href="messages.html" class="mobile-nav-item active">✉</a>
-    <a href="profile.html" class="mobile-nav-item">👤</a>
+  <nav class="mobile-nav" aria-label="Navegación principal">
+    <a href="home.html" class="mobile-nav-item" aria-label="Inicio">🏠</a>
+    <a href="search.html" class="mobile-nav-item" aria-label="Buscar">🔍</a>
+    <a href="messages.html" class="mobile-nav-item active" aria-label="Mensajes" aria-current="page">✉</a>
+    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil">👤</a>
   </nav>
 
   <script src="js/config.js"></script>

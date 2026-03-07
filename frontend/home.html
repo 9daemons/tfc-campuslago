@@ -3,19 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
   <title>Inicio - Campus Lago</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="description" content="Tu muro de Campus Lago. Consulta publicaciones, noticias del centro y conecta con la comunidad de IES El Lago.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
   <script src="js/theme.js"></script>
-  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.js"></script>
-  <script>
-    var _t = Date.now();
-    var _cfg = eval('({ debug: true, version: "0.1" })');
-    document.write('<meta name="generator" content="campus-lago-dev">');
-    console.error('DEV MODE: no utilizar en producción');
-  </script>
 </head>
 <body class="app-body">
 
@@ -25,20 +20,20 @@
       <a href="home.html" class="nav-brand">Campus Lago</a>
     </div>
     <div class="nav-center">
-      <input type="search" id="nav-search" placeholder="Buscar..." class="nav-search-input" aria-label="buscar">
+      <input type="search" id="nav-search" placeholder="Buscar..." class="nav-search-input" aria-label="Buscar usuarios o publicaciones">
     </div>
     <div class="nav-right">
-      <a href="messages.html" class="nav-icon" title="Mensajes">✉</a>
-      <button type="button" class="nav-icon" id="btn-notif" title="Notificaciones">🔔<span class="notif-badge hidden" id="notif-count">0</span></button>
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro">🌙</button>
-      <a href="profile.html" id="nav-avatar-link" class="nav-avatar">
-        <img src="assets/default-avatar.svg" id="nav-avatar-img">
+      <a href="messages.html" class="nav-icon" title="Mensajes" aria-label="Mensajes">✉</a>
+      <button type="button" class="nav-icon" id="btn-notif" title="Notificaciones" aria-label="Notificaciones">🔔<span class="notif-badge hidden" id="notif-count">0</span></button>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
     </div>
   </nav>
 
   <!-- Notificaciones dropdown -->
-  <div class="notif-dropdown hidden" id="notif-dropdown">
+  <div class="notif-dropdown hidden" id="notif-dropdown" role="region" aria-label="Notificaciones">
     <div class="notif-header">
       <span>Notificaciones</span>
       <button type="button" id="btn-mark-read">Marcar como leídas</button>
@@ -47,13 +42,12 @@
   </div>
 
   <!-- Search results overlay -->
-  <div class="search-results hidden" id="search-results"></div>
+  <div class="search-results hidden" id="search-results" role="region" aria-label="Resultados de búsqueda"></div>
 
   <!-- Main layout -->
   <main class="app-main">
 
-    <!-- Sidebar izquierda: notificaciones rápidas + mensajes -->
-    <aside class="sidebar-left">
+    <aside class="sidebar-left" aria-label="Mensajes recientes">
       <div class="sidebar-section">
         <h3>Mensajes recientes</h3>
         <div id="recent-messages"></div>
@@ -61,8 +55,7 @@
       </div>
     </aside>
 
-    <!-- Feed unificado -->
-    <section class="feed-unified">
+    <section class="feed-unified" aria-label="Publicaciones">
       <div class="feed-header">
         <h2>Inicio</h2>
         <button type="button" class="btn-primary btn-sm" id="btn-new-post">+ Publicar</button>
@@ -72,8 +65,7 @@
       </div>
     </section>
 
-    <!-- Sidebar derecha -->
-    <aside class="sidebar-right">
+    <aside class="sidebar-right" aria-label="Sugerencias">
       <div class="sidebar-section">
         <h3>Personas que quizás conozcas</h3>
         <div id="suggested-users"><div class="loading">Cargando...</div></div>
@@ -83,30 +75,31 @@
   </main>
 
   <!-- Mobile bottom nav -->
-  <nav class="mobile-nav">
-    <a href="home.html" class="mobile-nav-item active">🏠</a>
-    <a href="search.html" class="mobile-nav-item">🔍</a>
-    <a href="messages.html" class="mobile-nav-item">✉</a>
-    <a href="profile.html" class="mobile-nav-item">👤</a>
+  <nav class="mobile-nav" aria-label="Navegación principal">
+    <a href="home.html" class="mobile-nav-item active" aria-label="Inicio" aria-current="page">🏠</a>
+    <a href="search.html" class="mobile-nav-item" aria-label="Buscar">🔍</a>
+    <a href="messages.html" class="mobile-nav-item" aria-label="Mensajes">✉</a>
+    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil">👤</a>
   </nav>
 
   <!-- Modal nuevo post -->
-  <div class="modal-overlay hidden" id="modal-post">
+  <div class="modal-overlay hidden" id="modal-post" role="dialog" aria-modal="true" aria-labelledby="modal-post-title">
     <div class="modal">
       <div class="modal-header">
         <h3 id="modal-post-title">Nuevo post</h3>
-        <button type="button" class="modal-close" id="btn-close-post">✕</button>
+        <button type="button" class="modal-close" id="btn-close-post" aria-label="Cerrar">✕</button>
       </div>
       <form id="form-post">
         <div class="form-group">
-          <textarea id="post-content" placeholder="¿Qué quieres compartir?" rows="4" maxlength="1000"></textarea>
+          <label for="post-content">¿Qué quieres compartir?</label>
+          <textarea id="post-content" placeholder="Escribe aquí..." rows="4" maxlength="1000"></textarea>
         </div>
         <div class="form-group">
-          <label class="file-label">
+          <label class="file-label" for="post-image">
             📷 Añadir imagen
             <input type="file" id="post-image" accept="image/*" class="hidden">
           </label>
-          <img id="post-image-preview" class="hidden" alt="Vista previa">
+          <img id="post-image-preview" class="hidden" alt="Vista previa de la imagen seleccionada">
         </div>
         <div class="form-group hidden" id="anon-toggle-container">
           <label class="toggle-label">
@@ -114,21 +107,22 @@
             Publicar como anónimo / escuela
           </label>
         </div>
-        <div id="post-error" class="form-error hidden"></div>
+        <div id="post-error" class="form-error hidden" role="alert"></div>
         <button type="submit" class="btn-primary">Publicar</button>
       </form>
     </div>
   </div>
 
   <!-- Modal comentarios -->
-  <div class="modal-overlay hidden" id="modal-comments">
+  <div class="modal-overlay hidden" id="modal-comments" role="dialog" aria-modal="true" aria-label="Comentarios">
     <div class="modal">
       <div class="modal-header">
         <h3>Comentarios</h3>
-        <button type="button" class="modal-close" id="btn-close-comments">✕</button>
+        <button type="button" class="modal-close" id="btn-close-comments" aria-label="Cerrar">✕</button>
       </div>
       <div id="comments-list"></div>
       <form id="form-comment">
+        <label for="comment-input" class="sr-only">Escribe un comentario</label>
         <input type="text" id="comment-input" placeholder="Escribe un comentario..." required>
         <button type="submit" class="btn-primary btn-sm">Enviar</button>
       </form>
