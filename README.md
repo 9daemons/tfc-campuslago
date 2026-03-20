@@ -1,5 +1,5 @@
-*TRABAJO DE FIN DE CICLO - DAW - ENZO ESPIÑO CORRAL - 2026*
-*TUTOR: ANDREA CHINNICI*
+*TRABAJO DE FIN DE CICLO - DAW - ENZO ESPIÑO CORRAL - 2026*<br>
+*TUTOR: ANDREA CHINNICI*<br>
 *CAMPUS LAGO - RED SOCIAL*
 1. Justificación
 A día de hoy la comunicación y el intercambio de información son pilares
