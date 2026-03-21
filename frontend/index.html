@@ -4,20 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Campus Lago - Red social de IES El Lago</title>
-  <meta name="description" content="Campus Lago es la red social educativa de IES El Lago. Conecta con compañeros y profesores, consulta noticias del centro y gestiona tu vida académica.">
+  <title>Campus Lago - Red social educativa de IES El Lago</title>
+  <meta name="description" content="Campus Lago es la plataforma digital de IES El Lago. Conecta con compañeros y profesores, consulta noticias del centro y gestiona tu vida académica.">
   <meta name="author" content="IES El Lago">
-  <meta name="keywords" content="IES El Lago, Campus Lago, red social educativa, intranet escolar, Madrid">
+  <meta name="keywords" content="IES El Lago, Campus Lago, red social educativa, plataforma digital alumnos profesores, intranet escolar Madrid">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Campus Lago - Red social de IES El Lago">
+  <meta property="og:title" content="Campus Lago - Red social educativa de IES El Lago">
   <meta property="og:description" content="Conecta con compañeros y profesores de IES El Lago. Noticias, mensajes y mucho más.">
   <meta property="og:locale" content="es_ES">
+  <meta property="og:url" content="https://campuslago.netlify.app">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Campus Lago">
-  <meta name="twitter:description" content="Red social educativa de IES El Lago.">
+  <meta name="twitter:title" content="Campus Lago - Red social educativa de IES El Lago">
+  <meta name="twitter:description" content="Plataforma digital para alumnos y profesores de IES El Lago.">
 
+  <link rel="canonical" href="https://campuslago.netlify.app/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
@@ -26,19 +28,21 @@
 </head>
 <body class="auth-body">
 
-  <div class="auth-container">
-    <div class="auth-logo">
-      <h1>Campus Lago</h1>
-      <p>Red social de IES El Lago</p>
-    </div>
+  <header class="auth-header">
+    <h1>Campus Lago</h1>
+    <p>Red social educativa de IES El Lago</p>
+  </header>
 
-    <div class="auth-tabs">
-      <button class="tab-btn active" data-tab="login">Iniciar sesión</button>
-      <button class="tab-btn" data-tab="register">Registrarse</button>
-    </div>
+  <main class="auth-container" aria-label="Acceso a la plataforma">
+
+    <nav class="auth-tabs" aria-label="Opciones de acceso">
+      <button type="button" class="tab-btn active" data-tab="login">Iniciar sesión</button>
+      <button type="button" class="tab-btn" data-tab="register">Registrarse</button>
+    </nav>
 
     <!-- Login -->
-    <div class="auth-panel active" id="panel-login">
+    <section class="auth-panel active" id="panel-login" aria-labelledby="login-heading">
+      <h2 id="login-heading" class="sr-only">Iniciar sesión</h2>
       <form id="form-login">
         <div class="form-group">
           <label for="login-email">Email</label>
@@ -48,14 +52,15 @@
           <label for="login-password">Contraseña</label>
           <input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password">
         </div>
-        <div id="login-error" class="form-error hidden"></div>
+        <div id="login-error" class="form-error hidden" role="alert"></div>
         <button type="submit" class="btn-primary" id="btn-login">Entrar</button>
         <button type="button" class="btn-link" id="btn-forgot">¿Olvidaste la contraseña?</button>
       </form>
-    </div>
+    </section>
 
     <!-- Register -->
-    <div class="auth-panel" id="panel-register">
+    <section class="auth-panel" id="panel-register" aria-labelledby="register-heading">
+      <h2 id="register-heading" class="sr-only">Crear cuenta</h2>
       <form id="form-register">
         <div class="form-group">
           <label for="reg-name">Nombre completo</label>
@@ -74,23 +79,24 @@
           <label for="reg-password">Contraseña</label>
           <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" required minlength="8" autocomplete="new-password">
         </div>
-        <div id="reg-error" class="form-error hidden"></div>
-        <div id="reg-success" class="form-success hidden"></div>
+        <div id="reg-error" class="form-error hidden" role="alert"></div>
+        <div id="reg-success" class="form-success hidden" role="status"></div>
         <button type="submit" class="btn-primary" id="btn-register">Solicitar registro</button>
-        <p class="form-note">El administrador revisará tu solicitud. <a href="http://ies-el-lago.es" target="_blank" rel="noopener noreferrer">Más info</a></p>
+        <p class="form-note">El administrador revisará tu solicitud. <a href="http://ies-el-lago.es" target="_blank" rel="noopener noreferrer">Más info sobre IES El Lago</a></p>
       </form>
-    </div>
+    </section>
 
     <!-- Forgot password -->
-    <div class="auth-panel" id="panel-forgot">
+    <section class="auth-panel" id="panel-forgot" aria-labelledby="forgot-heading">
+      <h2 id="forgot-heading" class="sr-only">Recuperar contraseña</h2>
       <form id="form-forgot">
         <p class="form-note">Introduce tu email para recibir un PIN de recuperación.</p>
         <div class="form-group">
           <label for="forgot-email">Email</label>
           <input type="email" id="forgot-email" placeholder="usuario@educa.madrid.org" required autocomplete="email">
         </div>
-        <div id="forgot-error" class="form-error hidden"></div>
-        <div id="forgot-success" class="form-success hidden"></div>
+        <div id="forgot-error" class="form-error hidden" role="alert"></div>
+        <div id="forgot-success" class="form-success hidden" role="status"></div>
         <button type="submit" class="btn-primary">Enviar PIN</button>
         <button type="button" class="btn-link" id="btn-back-login">Volver al inicio de sesión</button>
       </form>
@@ -104,12 +110,17 @@
           <label for="reset-password">Nueva contraseña</label>
           <input type="password" id="reset-password" placeholder="Mínimo 8 caracteres" minlength="8" required autocomplete="new-password">
         </div>
-        <div id="reset-error" class="form-error hidden"></div>
-        <div id="reset-success" class="form-success hidden"></div>
+        <div id="reset-error" class="form-error hidden" role="alert"></div>
+        <div id="reset-success" class="form-success hidden" role="status"></div>
         <button type="submit" class="btn-primary">Cambiar contraseña</button>
       </form>
-    </div>
-  </div>
+    </section>
+
+  </main>
+
+  <footer class="auth-footer">
+    <p><small>© 2026 Campus Lago · IES El Lago · Todos los derechos reservados</small></p>
+  </footer>
 
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>

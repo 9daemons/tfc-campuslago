@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /api/
+Disallow: /home.html
+Disallow: /profile.html
+Disallow: /messages.html
+Disallow: /search.html
+
+Sitemap: https://campuslago.netlify.app/sitemap.xml
