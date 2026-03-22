@@ -28,12 +28,12 @@
 </head>
 <body class="auth-body">
 
-  <header class="auth-header">
-    <h1>Campus Lago</h1>
-    <p>Red social educativa de IES El Lago</p>
-  </header>
+  <main class="auth-container">
 
-  <main class="auth-container" aria-label="Acceso a la plataforma">
+    <header class="auth-header">
+      <h1>Campus Lago</h1>
+      <p>Red social educativa de IES El Lago</p>
+    </header>
 
     <nav class="auth-tabs" aria-label="Opciones de acceso">
       <button type="button" class="tab-btn active" data-tab="login">Iniciar sesión</button>
@@ -41,8 +41,7 @@
     </nav>
 
     <!-- Login -->
-    <section class="auth-panel active" id="panel-login" aria-labelledby="login-heading">
-      <h2 id="login-heading" class="sr-only">Iniciar sesión</h2>
+    <section class="auth-panel active" id="panel-login">
       <form id="form-login">
         <div class="form-group">
           <label for="login-email">Email</label>
@@ -59,8 +58,7 @@
     </section>
 
     <!-- Register -->
-    <section class="auth-panel" id="panel-register" aria-labelledby="register-heading">
-      <h2 id="register-heading" class="sr-only">Crear cuenta</h2>
+    <section class="auth-panel" id="panel-register">
       <form id="form-register">
         <div class="form-group">
           <label for="reg-name">Nombre completo</label>
@@ -87,8 +85,7 @@
     </section>
 
     <!-- Forgot password -->
-    <section class="auth-panel" id="panel-forgot" aria-labelledby="forgot-heading">
-      <h2 id="forgot-heading" class="sr-only">Recuperar contraseña</h2>
+    <section class="auth-panel" id="panel-forgot">
       <form id="form-forgot">
         <p class="form-note">Introduce tu email para recibir un PIN de recuperación.</p>
         <div class="form-group">
