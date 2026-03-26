@@ -68,7 +68,7 @@ async function loadUserPosts() {
     const posts = await apiFetch(`/users/${targetUsername}/posts`);
     container.innerHTML = posts.length
       ? posts.map(p => `
-        <div class="post-card" style="margin-bottom:.8rem">
+        <article class="post-card" style="margin-bottom:.8rem">
           ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
           ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="">` : ''}
           <div class="post-actions">
@@ -76,7 +76,7 @@ async function loadUserPosts() {
             <span class="post-action-btn">💬 ${p.comments_count}</span>
             <small style="margin-left:auto;color:var(--text-muted)">${timeAgo(p.created_at)}</small>
           </div>
-        </div>`).join('')
+        </article>`).join('')
       : '<p class="loading">Sin posts aún.</p>';
     const statPosts = document.getElementById('stat-posts');
     if (statPosts) statPosts.textContent = posts.length;

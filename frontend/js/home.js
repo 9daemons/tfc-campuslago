@@ -43,7 +43,7 @@ function renderPost(p) {
   const av = (isOfficial && p.is_anonymous) ? 'assets/default-avatar.svg' : avatarUrl(p.avatar);
 
   return `
-  <div class="post-card${isOfficial ? ' official' : ''}" data-id="${p.id}">
+  <article class="post-card${isOfficial ? ' official' : ''}" data-id="${p.id}">
     ${isOfficial ? '<span class="post-official-label">📢 Noticia del centro</span>' : ''}
     <div class="post-header">
       <img src="${av}" alt="">
@@ -63,7 +63,7 @@ function renderPost(p) {
         💬 ${p.comments_count}
       </button>
     </div>
-  </div>`;
+  </article>`;
 }
 
 function attachPostActions(containerId) {
@@ -154,7 +154,7 @@ async function openComments(postId) {
     const comments = await apiFetch(`/posts/${postId}/comments`);
     list.innerHTML = comments.length
       ? comments.map(c => `
-        <div class="post-card comment-card">
+        <article class="post-card comment-card">
           <div class="post-header">
             <img src="${avatarUrl(c.avatar)}" alt="" class="comment-avatar">
             <div class="post-header-info">
@@ -163,7 +163,7 @@ async function openComments(postId) {
             </div>
           </div>
           <p class="post-content">${escapeHtml(c.content)}</p>
-        </div>`).join('')
+        </article>`).join('')
       : '<p class="loading">Sin comentarios aún.</p>';
   } catch (e) {
     list.innerHTML = `<p class="loading">${e.message}</p>`;
