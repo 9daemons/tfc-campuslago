@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 2. Definición de Roles
+enum Role {
+  ALUMNO
+  PROFESOR
+  ADMINISTRADOR
+}
+
+// 3. Entidad: Usuario
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ALUMNO)
+  avatarUrl String?  // El signo '?' indica que este campo es opcional
+  createdAt DateTime @default(now())
+
+  // Relaciones (Un usuario genera listas de estas cosas)
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+}
+
+// 4. Entidad: Publicación (Muro)
+model Post {
+  id          Int      @id @default(autoincrement())
+  content     String
+  imageUrl    String?  // Opcional, por si suben una foto
+  isAnonymous Boolean  @default(false) // Para las noticias oficiales del centro
+  createdAt   DateTime @default(now())
+
+  // Relación: Cada post pertenece a un autor (Usuario)
+  authorId    Int
+  author      User     @relation(fields: [authorId], references: [id])
+
+  // Relaciones: Un post puede tener muchos comentarios y likes
+  comments    Comment[]
+  likes       Like[]
+}
+
+// 5. Entidad: Comentario
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  // A qué publicación pertenece
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+
+  // Quién lo ha escrito
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+// 6. Entidad: Like (Me Gusta)
+model Like {
+  id        Int      @id @default(autoincrement())
+
+  // A qué publicación se le da like
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+
+  // Quién le da like
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  // Regla de seguridad: Un usuario solo puede dar un like por publicación
+  @@unique([postId, userId])
+}

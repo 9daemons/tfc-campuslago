@@ -1,0 +1,104 @@
+/* Reseteo y variables básicas */
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --primary-color: #0b1c3c; /* Azul oscuro simulado de tus prototipos */
+    --accent-green: #2ecc71; /* Iluminación en verde para mensajes nuevos [cite: 109] */
+    --text-dark: #333333;
+    --text-muted: #666666;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    padding: 10px 20px;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.nav-search input {
+    padding: 8px;
+    width: 300px;
+    border-radius: 20px;
+    border: none;
+}
+
+/* Layout Principal Grid */
+.container {
+    display: grid;
+    grid-template-columns: 250px 1fr 250px;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+    align-items: start;
+}
+
+/* Tarjetas (Cards) */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* Laterales fijos visualmente (Sticky) */
+.sidebar-left, .sidebar-right {
+    position: sticky;
+    top: 70px; /* Debajo del navbar */
+}
+
+/* Listas de notificaciones y chats */
+ul { list-style: none; padding: 0; }
+li { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px;}
+.avatar-small { width: 30px; height: 30px; border-radius: 50%; }
+.avatar-large { width: 80px; height: 80px; border-radius: 50%; }
+
+/* Estilos de Botones */
+button {
+    cursor: pointer;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-logout { background-color: transparent; color: white; border: 1px solid white; }
+
+/* Posts Centrales */
+#postContent {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.post {
+    margin-bottom: 15px;
+}

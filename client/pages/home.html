@@ -1,11 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <title>Campus Lago - Inicio</title>
+    <link rel="stylesheet" href="../css/style.css">
+    </head>
 <body>
-    
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="home.html">Campus Lago</a>
+        </div>
+        <div class="nav-search">
+            <input type="text" id="searchInput" placeholder="Buscar usuarios o publicaciones...">
+        </div>
+        <div class="nav-user">
+            <img src="default-avatar.png" alt="Perfil" class="avatar-small">
+            <button id="btnLogout" class="btn-logout">Cerrar sesión</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <aside class="sidebar-left">
+            <div class="card notifications-card">
+                <h3>Notificaciones</h3>
+                <ul id="notificationsList">
+                    </ul>
+            </div>
+            
+            <div class="card chats-card">
+                <h3>Últimos Chats</h3>
+                <ul id="chatsList">
+                    </ul>
+            </div>
+        </aside>
+
+        <section class="feed">
+            <div class="create-post-card card">
+                <textarea id="postContent" placeholder="¿Qué quieres compartir con el Campus?"></textarea>
+                <div class="post-actions">
+                    <button id="btnTextPost">Solo Texto</button>
+                    <button id="btnImagePost">Añadir Imagen</button>
+                    <label class="teacher-only" style="display:none;">
+                        <input type="checkbox" id="chkAnonymous"> Publicación Oficial Anónima
+                    </label>
+                    <button id="btnSubmitPost" class="btn-primary">Publicar</button>
+                </div>
+            </div>
+
+            <div id="postsContainer">
+                </div>
+        </section>
+
+        <aside class="sidebar-right">
+            <div class="card profile-summary">
+                <img src="default-avatar.png" alt="Mi Perfil" class="avatar-large">
+                <h3 id="userName">Cargando...</h3>
+                <p id="userRole">Rol</p>
+                <a href="perfil.html" class="btn-secondary">Ver mi perfil</a>
+            </div>
+        </aside>
+    </main>
+
+    <script src="../scripts/app.js"></script>
 </body>
 </html>
