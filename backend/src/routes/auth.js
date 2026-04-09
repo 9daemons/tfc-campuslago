@@ -4,26 +4,14 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
-
-const ALLOWED_DOMAIN = '@educa.madrid.org';
-
-function isValidEmail(email) {
-  return typeof email === 'string' && email.toLowerCase().endsWith(ALLOWED_DOMAIN);
-}
+const { isValidEmail, validateRegister, validateLogin } = require('../services/validation');
 
 // POST /api/auth/register - Solicitud de registro (va a admin)
 router.post('/register', async (req, res) => {
   const { email, username, full_name, password } = req.body;
 
-  if (!email || !username || !full_name || !password) {
-    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
-  }
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ error: 'Solo se permiten cuentas @educa.madrid.org.' });
-  }
-  if (password.length < 8) {
-    return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
-  }
+  const errors = validateRegister({ email, username, full_name, password });
+  if (errors.length > 0) return res.status(400).json({ error: errors[0] });
 
   try {
     const [existing] = await db.execute(
@@ -59,12 +47,8 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email y contraseña requeridos.' });
-  }
-  if (!isValidEmail(email)) {
-    return res.status(400).json({ error: 'Solo se permiten cuentas @educa.madrid.org.' });
-  }
+  const errors = validateLogin({ email, password });
+  if (errors.length > 0) return res.status(400).json({ error: errors[0] });
 
   try {
     const [rows] = await db.execute(
@@ -152,8 +136,19 @@ router.post('/reset-password', async (req, res) => {
     if (resets.length === 0) return res.status(400).json({ error: 'PIN inválido o expirado.' });
 
     const hash = await bcrypt.hash(new_password, 10);
-    await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, userId]);
-    await db.execute('UPDATE password_resets SET used = TRUE WHERE id = ?', [resets[0].id]);
+
+    const conn = await db.getConnection();
+    await conn.beginTransaction();
+    try {
+      await conn.execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, userId]);
+      await conn.execute('UPDATE password_resets SET used = TRUE WHERE id = ?', [resets[0].id]);
+      await conn.commit();
+    } catch (txErr) {
+      await conn.rollback();
+      throw txErr;
+    } finally {
+      conn.release();
+    }
 
     res.json({ message: 'Contraseña actualizada.' });
   } catch (err) {

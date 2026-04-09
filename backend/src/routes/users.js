@@ -120,12 +120,22 @@ router.post('/admin/requests/:id/approve', verifyToken, requireRole('admin'), as
     const r = reqs[0];
     const userRole = ['student', 'teacher', 'admin'].includes(role) ? role : 'student';
 
-    await db.execute(
-      'INSERT INTO users (email, username, full_name, password_hash, role) VALUES (?, ?, ?, ?, ?)',
-      [r.email, r.username, r.full_name, r.password_hash, userRole]
-    );
-    await db.execute('UPDATE registration_requests SET status = ? WHERE id = ?', ['approved', req.params.id]);
-    res.json({ message: 'Solicitud aprobada, usuario creado.' });
+    const conn = await db.getConnection();
+    await conn.beginTransaction();
+    try {
+      await conn.execute(
+        'INSERT INTO users (email, username, full_name, password_hash, role) VALUES (?, ?, ?, ?, ?)',
+        [r.email, r.username, r.full_name, r.password_hash, userRole]
+      );
+      await conn.execute('UPDATE registration_requests SET status = ? WHERE id = ?', ['approved', req.params.id]);
+      await conn.commit();
+      conn.release();
+      res.json({ message: 'Solicitud aprobada, usuario creado.' });
+    } catch (txErr) {
+      await conn.rollback();
+      conn.release();
+      throw txErr;
+    }
   } catch (err) {
     res.status(500).json({ error: 'Error.' });
   }

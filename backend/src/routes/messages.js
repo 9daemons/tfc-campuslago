@@ -73,17 +73,25 @@ router.post('/conversations', verifyToken, async (req, res) => {
       if (existing.length > 0) return res.json({ id: existing[0].id, existing: true });
     }
 
-    const [conv] = await db.execute(
-      'INSERT INTO conversations (is_group, name, created_by) VALUES (?, ?, ?)',
-      [is_group ? 1 : 0, name || null, req.user.id]
-    );
-    const convId = conv.insertId;
-
-    for (const uid of allMembers) {
-      await db.execute('INSERT INTO conversation_members (conversation_id, user_id) VALUES (?, ?)', [convId, uid]);
+    const conn = await db.getConnection();
+    await conn.beginTransaction();
+    try {
+      const [conv] = await conn.execute(
+        'INSERT INTO conversations (is_group, name, created_by) VALUES (?, ?, ?)',
+        [is_group ? 1 : 0, name || null, req.user.id]
+      );
+      const convId = conv.insertId;
+      for (const uid of allMembers) {
+        await conn.execute('INSERT INTO conversation_members (conversation_id, user_id) VALUES (?, ?)', [convId, uid]);
+      }
+      await conn.commit();
+      conn.release();
+      res.status(201).json({ id: convId });
+    } catch (txErr) {
+      await conn.rollback();
+      conn.release();
+      throw txErr;
     }
-
-    res.status(201).json({ id: convId });
   } catch (err) {
     res.status(500).json({ error: 'Error.' });
   }
