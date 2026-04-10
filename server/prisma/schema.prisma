@@ -4,76 +4,89 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// 2. Definición de Roles
-enum Role {
-  ALUMNO
-  PROFESOR
-  ADMINISTRADOR
-}
-
-// 3. Entidad: Usuario
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role     @default(ALUMNO)
-  avatarUrl String?  // El signo '?' indica que este campo es opcional
-  createdAt DateTime @default(now())
-
-  // Relaciones (Un usuario genera listas de estas cosas)
-  posts     Post[]
-  comments  Comment[]
-  likes     Like[]
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  name          String
+  role          Role           @default(ALUMNO)
+  avatarUrl     String?
+  createdAt     DateTime       @default(now())
+  comments      Comment[]
+  likes         Like[]
+  sentMessages  Message[]      @relation("SentMessages")
+  notifications Notification[]
+  posts         Post[]
+  conversations Conversation[] @relation("UserConversations")
+  User_A        User[]         @relation("UserFollows")
+  User_B        User[]         @relation("UserFollows")
 }
 
-// 4. Entidad: Publicación (Muro)
 model Post {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   content     String
-  imageUrl    String?  // Opcional, por si suben una foto
-  isAnonymous Boolean  @default(false) // Para las noticias oficiales del centro
-  createdAt   DateTime @default(now())
-
-  // Relación: Cada post pertenece a un autor (Usuario)
+  imageUrl    String?
+  isAnonymous Boolean   @default(false)
+  createdAt   DateTime  @default(now())
   authorId    Int
-  author      User     @relation(fields: [authorId], references: [id])
-
-  // Relaciones: Un post puede tener muchos comentarios y likes
   comments    Comment[]
   likes       Like[]
+  author      User      @relation(fields: [authorId], references: [id])
 }
 
-// 5. Entidad: Comentario
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
-
-  // A qué publicación pertenece
   postId    Int
-  post      Post     @relation(fields: [postId], references: [id])
-
-  // Quién lo ha escrito
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
-// 6. Entidad: Like (Me Gusta)
 model Like {
-  id        Int      @id @default(autoincrement())
+  id     Int  @id @default(autoincrement())
+  postId Int
+  userId Int
+  post   Post @relation(fields: [postId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 
-  // A qué publicación se le da like
-  postId    Int
-  post      Post     @relation(fields: [postId], references: [id])
-
-  // Quién le da like
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-
-  // Regla de seguridad: Un usuario solo puede dar un like por publicación
   @@unique([postId, userId])
+}
+
+model Conversation {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  messages     Message[]
+  participants User[]    @relation("UserConversations")
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  content        String
+  createdAt      DateTime     @default(now())
+  isRead         Boolean      @default(false)
+  senderId       Int
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    Int
+  relatedId Int?
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ALUMNO
+  PROFESOR
+  ADMINISTRADOR
 }
