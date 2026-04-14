@@ -4,13 +4,13 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
-const { isValidEmail, validateRegister, validateLogin } = require('../services/validation');
+const ValidationService = require('../services/ValidationService');
 
-// POST /api/auth/register - Solicitud de registro (va a admin)
+// registro - la solicitud va a pendiente hasta que admin la apruebe
 router.post('/register', async (req, res) => {
   const { email, username, full_name, password } = req.body;
 
-  const errors = validateRegister({ email, username, full_name, password });
+  const errors = ValidationService.validateRegister({ email, username, full_name, password });
   if (errors.length > 0) return res.status(400).json({ error: errors[0] });
 
   try {
@@ -18,36 +18,32 @@ router.post('/register', async (req, res) => {
       'SELECT id FROM users WHERE email = ? OR username = ?',
       [email.toLowerCase(), username]
     );
-    if (existing.length > 0) {
+    if (existing.length > 0)
       return res.status(409).json({ error: 'El email o nombre de usuario ya existe.' });
-    }
 
-    const [pendingReq] = await db.execute(
-      'SELECT id FROM registration_requests WHERE email = ?',
-      [email.toLowerCase()]
+    const [pending] = await db.execute(
+      'SELECT id FROM registration_requests WHERE email = ?', [email.toLowerCase()]
     );
-    if (pendingReq.length > 0) {
+    if (pending.length > 0)
       return res.status(409).json({ error: 'Ya existe una solicitud pendiente con ese email.' });
-    }
 
-    const password_hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, 10);
     await db.execute(
       'INSERT INTO registration_requests (email, full_name, username, password_hash) VALUES (?, ?, ?, ?)',
-      [email.toLowerCase(), full_name, username, password_hash]
+      [email.toLowerCase(), full_name, username, hash]
     );
 
     res.status(201).json({ message: 'Solicitud enviada. El administrador la revisará pronto.' });
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al procesar el registro.' });
   }
 });
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  const errors = validateLogin({ email, password });
+  const errors = ValidationService.validateLogin({ email, password });
   if (errors.length > 0) return res.status(400).json({ error: errors[0] });
 
   try {
@@ -55,20 +51,17 @@ router.post('/login', async (req, res) => {
       'SELECT id, email, username, full_name, role, avatar, bio, is_active FROM users WHERE email = ?',
       [email.toLowerCase()]
     );
-    if (rows.length === 0) {
+    if (rows.length === 0)
       return res.status(401).json({ error: 'Credenciales incorrectas.' });
-    }
 
     const user = rows[0];
-    if (!user.is_active) {
+    if (!user.is_active)
       return res.status(403).json({ error: 'Cuenta desactivada.' });
-    }
 
     const [pwRow] = await db.execute('SELECT password_hash FROM users WHERE id = ?', [user.id]);
     const valid = await bcrypt.compare(password, pwRow[0].password_hash);
-    if (!valid) {
+    if (!valid)
       return res.status(401).json({ error: 'Credenciales incorrectas.' });
-    }
 
     const token = jwt.sign(
       { id: user.id, email: user.email, username: user.username, role: user.role },
@@ -77,25 +70,21 @@ router.post('/login', async (req, res) => {
     );
 
     res.json({ token, user });
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al iniciar sesión.' });
   }
 });
 
-// POST /api/auth/forgot-password
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
-  if (!email || !isValidEmail(email)) {
+  if (!email || !ValidationService.isValidEmail(email))
     return res.status(400).json({ error: 'Email no válido.' });
-  }
 
   try {
     const [rows] = await db.execute('SELECT id FROM users WHERE email = ?', [email.toLowerCase()]);
-    // Respuesta genérica para no revelar si el email existe
-    if (rows.length === 0) {
+    if (rows.length === 0)
       return res.json({ message: 'Si el email existe, recibirás un PIN.' });
-    }
 
     const pin = Math.floor(100000 + Math.random() * 900000).toString();
     const expires = new Date(Date.now() + 15 * 60 * 1000);
@@ -104,25 +93,22 @@ router.post('/forgot-password', async (req, res) => {
       [rows[0].id, pin, expires]
     );
 
-    // TODO: enviar email con nodemailer
+    // TODO: enviar por email con nodemailer
     console.log(`PIN para ${email}: ${pin}`);
 
     res.json({ message: 'Si el email existe, recibirás un PIN.' });
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al procesar la solicitud.' });
   }
 });
 
-// POST /api/auth/reset-password
 router.post('/reset-password', async (req, res) => {
   const { email, pin, new_password } = req.body;
-  if (!email || !pin || !new_password) {
+  if (!email || !pin || !new_password)
     return res.status(400).json({ error: 'Faltan campos.' });
-  }
-  if (new_password.length < 8) {
+  if (!ValidationService.isValidPassword(new_password))
     return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
-  }
 
   try {
     const [users] = await db.execute('SELECT id FROM users WHERE email = ?', [email.toLowerCase()]);
@@ -137,6 +123,7 @@ router.post('/reset-password', async (req, res) => {
 
     const hash = await bcrypt.hash(new_password, 10);
 
+    // transacción para que ambas actualizaciones sean atómicas
     const conn = await db.getConnection();
     await conn.beginTransaction();
     try {
@@ -151,13 +138,12 @@ router.post('/reset-password', async (req, res) => {
     }
 
     res.json({ message: 'Contraseña actualizada.' });
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al resetear contraseña.' });
   }
 });
 
-// GET /api/auth/me
 router.get('/me', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
@@ -166,8 +152,8 @@ router.get('/me', verifyToken, async (req, res) => {
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
     res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: 'Error al obtener usuario.' });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
   }
 });
 

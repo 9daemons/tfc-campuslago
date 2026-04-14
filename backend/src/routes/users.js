@@ -4,7 +4,6 @@ const db = require('../db/connection');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-// GET /api/users/:username
 router.get('/:username', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
@@ -14,25 +13,19 @@ router.get('/:username', verifyToken, async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
 
     const user = rows[0];
-    const [followersR] = await db.execute('SELECT COUNT(*) AS c FROM follows WHERE following_id = ?', [user.id]);
-    const [followingR] = await db.execute('SELECT COUNT(*) AS c FROM follows WHERE follower_id = ?', [user.id]);
-    const [isFollowR] = await db.execute(
+    const [[{ c: followers }]] = await db.execute('SELECT COUNT(*) AS c FROM follows WHERE following_id = ?', [user.id]);
+    const [[{ c: following }]] = await db.execute('SELECT COUNT(*) AS c FROM follows WHERE follower_id = ?', [user.id]);
+    const [isFollowing] = await db.execute(
       'SELECT 1 FROM follows WHERE follower_id = ? AND following_id = ?',
       [req.user.id, user.id]
     );
 
-    res.json({
-      ...user,
-      followers: followersR[0].c,
-      following: followingR[0].c,
-      is_following: isFollowR.length > 0
-    });
-  } catch (err) {
+    res.json({ ...user, followers, following, is_following: isFollowing.length > 0 });
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// GET /api/users/:username/posts
 router.get('/:username/posts', verifyToken, async (req, res) => {
   try {
     const [userRows] = await db.execute('SELECT id FROM users WHERE username = ?', [req.params.username]);
@@ -46,16 +39,14 @@ router.get('/:username/posts', verifyToken, async (req, res) => {
       LEFT JOIN likes l ON l.post_id = p.id
       LEFT JOIN comments c ON c.post_id = p.id
       WHERE p.user_id = ?
-      GROUP BY p.id
-      ORDER BY p.created_at DESC
+      GROUP BY p.id ORDER BY p.created_at DESC
     `, [userRows[0].id]);
     res.json(rows);
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// PUT /api/users/me/profile
 router.put('/me/profile', verifyToken, upload.single('avatar'), async (req, res) => {
   const { full_name, bio } = req.body;
   const avatar = req.file ? `/uploads/${req.file.filename}` : undefined;
@@ -72,16 +63,14 @@ router.put('/me/profile', verifyToken, upload.single('avatar'), async (req, res)
     values.push(req.user.id);
     await db.execute(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, values);
     res.json({ message: 'Perfil actualizado.' });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// POST /api/users/:id/follow
 router.post('/:id/follow', verifyToken, async (req, res) => {
-  if (req.params.id == req.user.id) {
+  if (req.params.id == req.user.id)
     return res.status(400).json({ error: 'No puedes seguirte a ti mismo.' });
-  }
   try {
     const [existing] = await db.execute(
       'SELECT 1 FROM follows WHERE follower_id = ? AND following_id = ?',
@@ -93,24 +82,22 @@ router.post('/:id/follow', verifyToken, async (req, res) => {
     }
     await db.execute('INSERT INTO follows (follower_id, following_id) VALUES (?, ?)', [req.user.id, req.params.id]);
     res.json({ following: true });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// Admin: GET /api/users/admin/requests
 router.get('/admin/requests', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const [rows] = await db.execute(
       'SELECT id, email, full_name, username, status, created_at FROM registration_requests ORDER BY created_at DESC'
     );
     res.json(rows);
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// Admin: POST /api/users/admin/requests/:id/approve
 router.post('/admin/requests/:id/approve', verifyToken, requireRole('admin'), async (req, res) => {
   const { role } = req.body;
   try {
@@ -120,6 +107,7 @@ router.post('/admin/requests/:id/approve', verifyToken, requireRole('admin'), as
     const r = reqs[0];
     const userRole = ['student', 'teacher', 'admin'].includes(role) ? role : 'student';
 
+    // transacción: crear usuario y marcar solicitud como aprobada
     const conn = await db.getConnection();
     await conn.beginTransaction();
     try {
@@ -136,17 +124,16 @@ router.post('/admin/requests/:id/approve', verifyToken, requireRole('admin'), as
       conn.release();
       throw txErr;
     }
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// Admin: POST /api/users/admin/requests/:id/reject
 router.post('/admin/requests/:id/reject', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     await db.execute('UPDATE registration_requests SET status = ? WHERE id = ?', ['rejected', req.params.id]);
     res.json({ message: 'Solicitud rechazada.' });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });

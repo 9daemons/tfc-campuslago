@@ -4,7 +4,6 @@ const db = require('../db/connection');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-// GET /api/posts/feed/official - noticias oficiales (todos autenticados)
 router.get('/feed/official', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -21,17 +20,15 @@ router.get('/feed/official', verifyToken, async (req, res) => {
       LEFT JOIN comments c ON c.post_id = p.id
       WHERE p.post_type = 'official'
       GROUP BY p.id
-      ORDER BY p.created_at DESC
-      LIMIT 50
+      ORDER BY p.created_at DESC LIMIT 50
     `, [req.user.id]);
     res.json(rows);
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al obtener noticias.' });
   }
 });
 
-// GET /api/posts/feed/student - posts de estudiantes
 router.get('/feed/student', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -47,27 +44,24 @@ router.get('/feed/student', verifyToken, async (req, res) => {
       LEFT JOIN comments c ON c.post_id = p.id
       WHERE p.post_type = 'student'
       GROUP BY p.id
-      ORDER BY p.created_at DESC
-      LIMIT 50
+      ORDER BY p.created_at DESC LIMIT 50
     `, [req.user.id, req.user.id]);
     res.json(rows);
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al obtener posts.' });
   }
 });
 
-// POST /api/posts - crear post
 router.post('/', verifyToken, upload.single('image'), async (req, res) => {
-  const { content, post_type, is_anonymous } = req.body;
+  const { content } = req.body;
   const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (!content && !image_url) {
+  if (!content && !image_url)
     return res.status(400).json({ error: 'El post necesita contenido o imagen.' });
-  }
 
   try {
-    // Admin siempre publica como noticia oficial anónima (IES El Lago)
+    // el admin siempre publica como noticia oficial
     const type = req.user.role === 'admin' ? 'official' : 'student';
     const anon = req.user.role === 'admin' ? 1 : 0;
 
@@ -76,28 +70,26 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
       [req.user.id, content || null, image_url, type, anon]
     );
     res.status(201).json({ id: result.insertId, message: 'Post creado.' });
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Error al crear post.' });
   }
 });
 
-// DELETE /api/posts/:id
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT user_id FROM posts WHERE id = ?', [req.params.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Post no encontrado.' });
-    if (rows[0].user_id !== req.user.id && req.user.role !== 'admin') {
+    if (rows[0].user_id !== req.user.id && req.user.role !== 'admin')
       return res.status(403).json({ error: 'Sin permisos.' });
-    }
+
     await db.execute('DELETE FROM posts WHERE id = ?', [req.params.id]);
     res.json({ message: 'Post eliminado.' });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error al eliminar.' });
   }
 });
 
-// POST /api/posts/:id/like
 router.post('/:id/like', verifyToken, async (req, res) => {
   try {
     const [existing] = await db.execute(
@@ -110,12 +102,11 @@ router.post('/:id/like', verifyToken, async (req, res) => {
     }
     await db.execute('INSERT INTO likes (user_id, post_id) VALUES (?, ?)', [req.user.id, req.params.id]);
     res.json({ liked: true });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// POST /api/posts/:id/save
 router.post('/:id/save', verifyToken, async (req, res) => {
   try {
     const [existing] = await db.execute(
@@ -128,27 +119,24 @@ router.post('/:id/save', verifyToken, async (req, res) => {
     }
     await db.execute('INSERT INTO saved_posts (user_id, post_id) VALUES (?, ?)', [req.user.id, req.params.id]);
     res.json({ saved: true });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// GET /api/posts/:id/comments
 router.get('/:id/comments', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(`
       SELECT c.id, c.content, c.created_at, u.username, u.avatar, u.full_name
       FROM comments c JOIN users u ON c.user_id = u.id
-      WHERE c.post_id = ?
-      ORDER BY c.created_at ASC
+      WHERE c.post_id = ? ORDER BY c.created_at ASC
     `, [req.params.id]);
     res.json(rows);
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// POST /api/posts/:id/comments
 router.post('/:id/comments', verifyToken, async (req, res) => {
   const { content } = req.body;
   if (!content) return res.status(400).json({ error: 'Comentario vacío.' });
@@ -158,7 +146,7 @@ router.post('/:id/comments', verifyToken, async (req, res) => {
       [req.params.id, req.user.id, content]
     );
     res.status(201).json({ id: result.insertId, message: 'Comentario añadido.' });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });

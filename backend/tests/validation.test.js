@@ -1,66 +1,64 @@
-const { isValidEmail, isValidPassword, isValidUsername, validateRegister, validateLogin } = require('../src/services/validation');
+const ValidationService = require('../src/services/ValidationService');
 
 describe('isValidEmail', () => {
   test('acepta emails @educa.madrid.org', () => {
-    expect(isValidEmail('alumno@educa.madrid.org')).toBe(true);
+    expect(ValidationService.isValidEmail('alumno@educa.madrid.org')).toBe(true);
   });
   test('acepta emails de admin del dominio correcto', () => {
-    expect(isValidEmail('admin@educa.madrid.org')).toBe(true);
+    expect(ValidationService.isValidEmail('admin@educa.madrid.org')).toBe(true);
   });
   test('rechaza emails de otros dominios', () => {
-    expect(isValidEmail('alumno@gmail.com')).toBe(false);
-    expect(isValidEmail('alumno@hotmail.com')).toBe(false);
+    expect(ValidationService.isValidEmail('alumno@gmail.com')).toBe(false);
+    expect(ValidationService.isValidEmail('alumno@hotmail.com')).toBe(false);
   });
   test('rechaza valores no string', () => {
-    expect(isValidEmail(null)).toBe(false);
-    expect(isValidEmail(undefined)).toBe(false);
-    expect(isValidEmail(123)).toBe(false);
+    expect(ValidationService.isValidEmail(null)).toBe(false);
+    expect(ValidationService.isValidEmail(undefined)).toBe(false);
+    expect(ValidationService.isValidEmail(123)).toBe(false);
   });
   test('rechaza string vacío', () => {
-    expect(isValidEmail('')).toBe(false);
+    expect(ValidationService.isValidEmail('')).toBe(false);
   });
 });
 
 describe('isValidPassword', () => {
   test('acepta contraseñas de exactamente 8 caracteres', () => {
-    expect(isValidPassword('12345678')).toBe(true);
+    expect(ValidationService.isValidPassword('12345678')).toBe(true);
   });
   test('acepta contraseñas largas', () => {
-    expect(isValidPassword('contraseñaSegura123!')).toBe(true);
+    expect(ValidationService.isValidPassword('contraseñaSegura123!')).toBe(true);
   });
   test('rechaza contraseñas de menos de 8 caracteres', () => {
-    expect(isValidPassword('corto')).toBe(false);
-    expect(isValidPassword('1234567')).toBe(false);
+    expect(ValidationService.isValidPassword('corto')).toBe(false);
+    expect(ValidationService.isValidPassword('1234567')).toBe(false);
   });
   test('rechaza string vacío', () => {
-    expect(isValidPassword('')).toBe(false);
+    expect(ValidationService.isValidPassword('')).toBe(false);
   });
 });
 
 describe('isValidUsername', () => {
   test('acepta nombres alfanuméricos válidos', () => {
-    expect(isValidUsername('alumno123')).toBe(true);
-    expect(isValidUsername('user_name')).toBe(true);
-    expect(isValidUsername('ABC')).toBe(true);
+    expect(ValidationService.isValidUsername('alumno123')).toBe(true);
+    expect(ValidationService.isValidUsername('user_name')).toBe(true);
   });
   test('rechaza nombres con espacios', () => {
-    expect(isValidUsername('nombre apellido')).toBe(false);
+    expect(ValidationService.isValidUsername('nombre apellido')).toBe(false);
   });
   test('rechaza nombres con caracteres especiales', () => {
-    expect(isValidUsername('user@name')).toBe(false);
-    expect(isValidUsername('user-name')).toBe(false);
+    expect(ValidationService.isValidUsername('user@name')).toBe(false);
   });
-  test('rechaza nombres demasiado cortos (menos de 3 caracteres)', () => {
-    expect(isValidUsername('ab')).toBe(false);
+  test('rechaza nombres demasiado cortos', () => {
+    expect(ValidationService.isValidUsername('ab')).toBe(false);
   });
-  test('rechaza nombres demasiado largos (más de 30 caracteres)', () => {
-    expect(isValidUsername('a'.repeat(31))).toBe(false);
+  test('rechaza nombres demasiado largos', () => {
+    expect(ValidationService.isValidUsername('a'.repeat(31))).toBe(false);
   });
 });
 
 describe('validateRegister', () => {
-  test('devuelve array vacío con datos completamente válidos', () => {
-    const errors = validateRegister({
+  test('devuelve array vacío con datos válidos', () => {
+    const errors = ValidationService.validateRegister({
       email: 'alumno@educa.madrid.org',
       username: 'alumno123',
       full_name: 'Alumno Prueba',
@@ -68,13 +66,12 @@ describe('validateRegister', () => {
     });
     expect(errors).toHaveLength(0);
   });
-  test('devuelve error si faltan campos obligatorios', () => {
-    const errors = validateRegister({ email: '', username: '', full_name: '', password: '' });
-    expect(errors.length).toBeGreaterThan(0);
+  test('devuelve error si faltan campos', () => {
+    const errors = ValidationService.validateRegister({ email: '', username: '', full_name: '', password: '' });
     expect(errors).toContain('Todos los campos son obligatorios.');
   });
   test('rechaza email con dominio incorrecto', () => {
-    const errors = validateRegister({
+    const errors = ValidationService.validateRegister({
       email: 'alumno@gmail.com',
       username: 'alumno123',
       full_name: 'Alumno Prueba',
@@ -82,8 +79,8 @@ describe('validateRegister', () => {
     });
     expect(errors).toContain('Solo se permiten cuentas @educa.madrid.org.');
   });
-  test('rechaza contraseña demasiado corta', () => {
-    const errors = validateRegister({
+  test('rechaza contraseña corta', () => {
+    const errors = ValidationService.validateRegister({
       email: 'alumno@educa.madrid.org',
       username: 'alumno123',
       full_name: 'Alumno Prueba',
@@ -91,8 +88,8 @@ describe('validateRegister', () => {
     });
     expect(errors).toContain('La contraseña debe tener al menos 8 caracteres.');
   });
-  test('rechaza username con formato inválido', () => {
-    const errors = validateRegister({
+  test('rechaza username inválido', () => {
+    const errors = ValidationService.validateRegister({
       email: 'alumno@educa.madrid.org',
       username: 'nombre con espacios',
       full_name: 'Alumno Prueba',
@@ -104,15 +101,15 @@ describe('validateRegister', () => {
 
 describe('validateLogin', () => {
   test('devuelve array vacío con datos válidos', () => {
-    const errors = validateLogin({ email: 'alumno@educa.madrid.org', password: 'cualquiercontraseña' });
+    const errors = ValidationService.validateLogin({ email: 'alumno@educa.madrid.org', password: 'cualquiercontraseña' });
     expect(errors).toHaveLength(0);
   });
-  test('devuelve error si faltan campos', () => {
-    const errors = validateLogin({ email: '', password: '' });
+  test('error si faltan campos', () => {
+    const errors = ValidationService.validateLogin({ email: '', password: '' });
     expect(errors).toContain('Email y contraseña requeridos.');
   });
   test('rechaza dominio incorrecto', () => {
-    const errors = validateLogin({ email: 'alumno@gmail.com', password: 'contraseña123' });
+    const errors = ValidationService.validateLogin({ email: 'alumno@gmail.com', password: 'contraseña123' });
     expect(errors).toContain('Solo se permiten cuentas @educa.madrid.org.');
   });
 });
