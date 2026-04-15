@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Lago - Inicio</title>
     <link rel="stylesheet" href="../css/style.css">
-    </head>
+</head>
 <body>
     <nav class="navbar">
         <div class="nav-logo">
@@ -15,8 +15,7 @@
             <input type="text" id="searchInput" placeholder="Buscar usuarios o publicaciones...">
         </div>
         <div class="nav-user">
-            <img src="default-avatar.png" alt="Perfil" class="avatar-small">
-            <button id="btnLogout" class="btn-logout">Cerrar sesión</button>
+            <button type="button" id="btnLogout" class="btn-logout">Cerrar sesión</button>
         </div>
     </nav>
 
@@ -24,14 +23,11 @@
         <aside class="sidebar-left">
             <div class="card notifications-card">
                 <h3>Notificaciones</h3>
-                <ul id="notificationsList">
-                    </ul>
+                <p class="text-muted sidebar-empty">Sin notificaciones nuevas</p>
             </div>
-            
             <div class="card chats-card">
-                <h3>Últimos Chats</h3>
-                <ul id="chatsList">
-                    </ul>
+                <h3>Mensajes</h3>
+                <p class="text-muted sidebar-empty">Sin conversaciones</p>
             </div>
         </aside>
 
@@ -39,29 +35,25 @@
             <div class="create-post-card card">
                 <textarea id="postContent" placeholder="¿Qué quieres compartir con el Campus?"></textarea>
                 <div class="post-actions">
-                    <button id="btnTextPost">Solo Texto</button>
-                    <button id="btnImagePost">Añadir Imagen</button>
-                    <label class="teacher-only" style="display:none;">
-                        <input type="checkbox" id="chkAnonymous"> Publicación Oficial Anónima
-                    </label>
-                    <button id="btnSubmitPost" class="btn-primary">Publicar</button>
+                    <button type="button" id="btnImagePost">📷 Imagen</button>
+                    <button type="button" id="btnSubmitPost" class="btn-primary">Publicar</button>
                 </div>
             </div>
-
-            <div id="postsContainer">
-                </div>
+            <div id="postsContainer"></div>
         </section>
 
         <aside class="sidebar-right">
             <div class="card profile-summary">
-                <img src="default-avatar.png" alt="Mi Perfil" class="avatar-large">
+                <img src="../assets/defaultprofile.png" alt="Mi Perfil" class="avatar-large">
                 <h3 id="userName">Cargando...</h3>
-                <p id="userRole">Rol</p>
-                <a href="perfil.html" class="btn-secondary">Ver mi perfil</a>
+                <p id="userRole" class="text-muted"></p>
+                <a id="myProfileLink" href="profile.html" class="btn-secondary">Ver mi perfil</a>
             </div>
         </aside>
     </main>
 
+    <script src="../config.js"></script>
+    <script src="../scripts/auth.js"></script>
     <script src="../scripts/app.js"></script>
 </body>
 </html>

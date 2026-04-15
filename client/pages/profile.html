@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Lago - Perfil</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <a href="home.html">Campus Lago</a>
+        </div>
+        <div class="nav-search">
+            <input type="text" placeholder="Buscar usuarios o publicaciones...">
+        </div>
+        <div class="nav-user">
+            <button type="button" id="btnLogout" class="btn-logout">Cerrar sesión</button>
+        </div>
+    </nav>
+
+    <main class="profile-layout">
+        <!-- Sidebar izquierdo -->
+        <aside class="profile-sidebar">
+            <div class="card">
+                <h4 class="sidebar-title">⚙️ Ajustes</h4>
+                <ul class="sidebar-nav">
+                    <li><a href="home.html">🏠 Inicio</a></li>
+                    <li><a href="settings.html">👤 Mi cuenta</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <div class="profile-main">
+            <!-- Cabecera del perfil -->
+            <div class="card profile-card" id="profileCard">
+                <p class="text-muted">Cargando perfil...</p>
+            </div>
+
+            <!-- Posts del usuario -->
+            <div id="postsSection"></div>
+        </div>
+    </main>
+
+    <!-- Modal de edición de post -->
+    <div class="modal-overlay hidden" id="editModal">
+        <div class="modal-box">
+            <h3>Editar publicación</h3>
+            <textarea id="editContent" rows="4" placeholder="Escribe el nuevo contenido..."></textarea>
+            <div class="modal-actions">
+                <button type="button" id="btnCancelEdit">Cancelar</button>
+                <button type="button" id="btnSaveEdit" class="btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../config.js"></script>
+    <script src="../scripts/auth.js"></script>
+    <script>
+        const ROLE_LABELS = { ALUMNO: 'Alumno/a', PROFESOR: 'Profesor/a', ADMINISTRADOR: 'Administrador/a' };
+
+        const params      = new URLSearchParams(window.location.search);
+        const currentUser = getUser();
+        const targetId    = params.get('id') ? Number(params.get('id')) : currentUser.id;
+        const isAdmin     = currentUser.role === 'ADMINISTRADOR';
+        const isOwnProfile = targetId === currentUser.id;
+
+        let editingPostId = null;
+
+        // ── Tiempo relativo ───────────────────────────────────────────
+        function timeAgo(dateString) {
+            const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+            if (seconds < 60)  return 'Ahora mismo';
+            const m = Math.floor(seconds / 60);
+            if (m < 60)  return `Hace ${m} min`;
+            const h = Math.floor(m / 60);
+            if (h < 24)  return `Hace ${h}h`;
+            const d = Math.floor(h / 24);
+            if (d < 7)   return `Hace ${d}d`;
+            return new Date(dateString).toLocaleDateString('es-ES');
+        }
+
+        // ── Cargar perfil ─────────────────────────────────────────────
+        async function loadProfile() {
+            try {
+                const res = await fetch(`${API_URL}/users/${targetId}`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                if (res.status === 401 || res.status === 403) { logout(); return; }
+                if (!res.ok) {
+                    document.getElementById('profileCard').innerHTML =
+                        '<p style="color:red;">Usuario no encontrado.</p>';
+                    return;
+                }
+                const user = await res.json();
+                document.title = `Campus Lago - ${user.name}`;
+                renderProfileHeader(user);
+                renderPosts(user);
+            } catch {
+                document.getElementById('profileCard').innerHTML =
+                    '<p style="color:red;">Error al conectar con el servidor.</p>';
+            }
+        }
+
+        // ── Cabecera del perfil ───────────────────────────────────────
+        function renderProfileHeader(user) {
+            const joinDate = new Date(user.createdAt).toLocaleDateString('es-ES', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            const canEditRole = isAdmin && !isOwnProfile;
+            const roleHTML = canEditRole
+                ? `<select id="roleSelect" class="role-select">
+                        <option value="ALUMNO"         ${user.role === 'ALUMNO'         ? 'selected' : ''}>Alumno/a</option>
+                        <option value="PROFESOR"       ${user.role === 'PROFESOR'       ? 'selected' : ''}>Profesor/a</option>
+                        <option value="ADMINISTRADOR"  ${user.role === 'ADMINISTRADOR'  ? 'selected' : ''}>Administrador/a</option>
+                   </select>
+                   <span id="roleMsg" class="role-msg"></span>`
+                : `<span class="role-badge role-${user.role.toLowerCase()}">${ROLE_LABELS[user.role]}</span>`;
+
+            // Biografía (localStorage)
+            const bioKey = `bio_${user.id}`;
+            const savedBio = localStorage.getItem(bioKey) || '';
+            const bioHTML = isOwnProfile
+                ? `<p class="profile-bio" id="bioText" title="Haz clic para editar">
+                       ${savedBio || '<span class="text-muted">Añade una biografía...</span>'}
+                   </p>`
+                : savedBio
+                    ? `<p class="profile-bio">${savedBio}</p>`
+                    : '';
+
+            document.getElementById('profileCard').innerHTML = `
+                <div class="profile-header">
+                    <img src="${user.avatarUrl || '../assets/defaultprofile.png'}"
+                         alt="Avatar" class="profile-avatar">
+                    <div class="profile-info">
+                        <div class="profile-name-row">
+                            <h2>${user.name}</h2>
+                            <span class="profile-post-count">${user.posts.length} publicaciones</span>
+                        </div>
+                        <p class="text-muted profile-email">${user.email}</p>
+                        <div class="profile-role-row">
+                            <span class="profile-role-label">Rol:</span>
+                            ${roleHTML}
+                        </div>
+                        ${bioHTML}
+                        <p class="profile-since text-muted">Miembro desde ${joinDate}</p>
+                    </div>
+                </div>
+            `;
+
+            // Editar bio al hacer clic (solo perfil propio)
+            if (isOwnProfile) {
+                document.getElementById('bioText').addEventListener('click', () => {
+                    const current = localStorage.getItem(bioKey) || '';
+                    const input = prompt('Edita tu biografía:', current);
+                    if (input === null) return; // cancelado
+                    localStorage.setItem(bioKey, input.trim());
+                    renderProfileHeader(user); // re-render
+                });
+            }
+
+            // Cambio de rol (admin)
+            if (canEditRole) {
+                document.getElementById('roleSelect').addEventListener('change', async (e) => {
+                    const msgEl = document.getElementById('roleMsg');
+                    msgEl.textContent = '';
+                    msgEl.className = 'role-msg';
+                    try {
+                        const res = await fetch(`${API_URL}/users/${user.id}/role`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${getToken()}`,
+                            },
+                            body: JSON.stringify({ role: e.target.value }),
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            msgEl.textContent = '✓ Guardado';
+                            msgEl.classList.add('role-msg--ok');
+                        } else {
+                            msgEl.textContent = data.error;
+                            msgEl.classList.add('role-msg--error');
+                            e.target.value = user.role;
+                        }
+                    } catch {
+                        msgEl.textContent = 'Error de conexión';
+                        msgEl.classList.add('role-msg--error');
+                        e.target.value = user.role;
+                    }
+                });
+            }
+        }
+
+        // ── Posts del perfil ──────────────────────────────────────────
+        function renderPosts(user) {
+            const section = document.getElementById('postsSection');
+
+            const title = isOwnProfile ? 'Mis publicaciones' : `Publicaciones de ${user.name}`;
+
+            if (user.posts.length === 0) {
+                section.innerHTML = `
+                    <div class="card">
+                        <h3>${title}</h3>
+                        <p class="text-muted">Aún no hay publicaciones.</p>
+                    </div>`;
+                return;
+            }
+
+            section.innerHTML = `<h3 class="posts-section-title">${title}</h3>`;
+
+            user.posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card post';
+                card.dataset.postId = post.id;
+
+                const likes    = post._count?.likes    ?? 0;
+                const comments = post._count?.comments ?? 0;
+
+                const actionsHTML = isOwnProfile ? `
+                    <div class="post-owner-actions">
+                        <button type="button" class="btn-text btn-edit-post">✏️ Editar</button>
+                        <button type="button" class="btn-text btn-delete-post" style="color:#c0392b;">🗑️ Eliminar</button>
+                    </div>` : '';
+
+                card.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-author">
+                            <img src="${user.avatarUrl || '../assets/defaultprofile.png'}"
+                                 class="avatar-small" alt="">
+                            <strong>${user.name}</strong>
+                            <span class="role-badge role-${user.role.toLowerCase()}">${ROLE_LABELS[user.role]}</span>
+                        </div>
+                        <span class="text-muted post-time">${timeAgo(post.createdAt)}</span>
+                    </div>
+                    <div class="post-body">
+                        <p class="post-content-text">${post.content}</p>
+                    </div>
+                    <div class="post-footer">
+                        <div class="post-stats">
+                            <span class="btn-action">👍 ${likes}</span>
+                            <span class="btn-action">💬 ${comments}</span>
+                        </div>
+                        ${actionsHTML}
+                    </div>
+                `;
+
+                if (isOwnProfile) {
+                    card.querySelector('.btn-edit-post').addEventListener('click', () => {
+                        openEditModal(post.id, post.content);
+                    });
+                    card.querySelector('.btn-delete-post').addEventListener('click', () => {
+                        deletePost(post.id, card);
+                    });
+                }
+
+                section.appendChild(card);
+            });
+        }
+
+        // ── Modal de edición ──────────────────────────────────────────
+        function openEditModal(postId, content) {
+            editingPostId = postId;
+            document.getElementById('editContent').value = content;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        document.getElementById('btnCancelEdit').addEventListener('click', closeModal);
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            editingPostId = null;
+        }
+
+        document.getElementById('btnSaveEdit').addEventListener('click', async () => {
+            const content = document.getElementById('editContent').value.trim();
+            if (!content || !editingPostId) return;
+
+            try {
+                const res = await fetch(`${API_URL}/posts/${editingPostId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getToken()}`,
+                    },
+                    body: JSON.stringify({ content }),
+                });
+
+                if (res.ok) {
+                    // Actualizar el texto en el DOM sin recargar todo
+                    const card = document.querySelector(`[data-post-id="${editingPostId}"]`);
+                    if (card) card.querySelector('.post-content-text').textContent = content;
+                    closeModal();
+                } else {
+                    const data = await res.json();
+                    alert(data.error);
+                }
+            } catch {
+                alert('Error al guardar.');
+            }
+        });
+
+        // ── Eliminar post ─────────────────────────────────────────────
+        async function deletePost(postId, card) {
+            if (!confirm('¿Seguro que quieres eliminar esta publicación?')) return;
+
+            try {
+                const res = await fetch(`${API_URL}/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+
+                if (res.ok) {
+                    card.remove();
+                } else {
+                    const data = await res.json();
+                    alert(data.error);
+                }
+            } catch {
+                alert('Error al eliminar.');
+            }
+        }
+
+        document.getElementById('btnLogout').addEventListener('click', logout);
+        loadProfile();
+    </script>
+</body>
+</html>

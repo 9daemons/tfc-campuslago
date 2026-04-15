@@ -81,8 +81,23 @@ button {
     padding: 8px 12px;
     border-radius: 5px;
 }
-.btn-primary { background-color: var(--primary-color); color: white; }
-.btn-logout { background-color: transparent; color: white; border: 1px solid white; }
+.btn-primary    { background-color: var(--primary-color); color: white; }
+.btn-secondary  { display: inline-block; margin-top: 8px; padding: 7px 14px; border-radius: 5px; background-color: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); text-decoration: none; font-size: 0.9rem; }
+.btn-secondary:hover { background-color: var(--primary-color); color: white; }
+.btn-logout     { background-color: transparent; color: white; border: 1px solid white; }
+
+/* Botones de acción en posts */
+.btn-action {
+    background: none;
+    border: 1px solid #ddd;
+    color: var(--text-muted);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: background 0.15s, color 0.15s;
+}
+.btn-action:hover     { background-color: #f0f2f5; color: var(--text-dark); }
+.btn-like--active     { background-color: #dbeafe; border-color: #3b82f6; color: #1e40af; }
 
 /* Posts Centrales */
 #postContent {
@@ -102,3 +117,378 @@ button {
 .post {
     margin-bottom: 15px;
 }
+
+.post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.post-time { font-size: 0.82rem; white-space: nowrap; }
+.post-body p { margin: 0; line-height: 1.5; }
+.post-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+.sidebar-empty { font-size: 0.85rem; margin: 4px 0 0; }
+
+/* Post de profesor — fondo azul claro */
+.post--profesor {
+    background-color: #eff6ff;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Post de administrador — aviso oficial, fondo ámbar */
+.post--official {
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+}
+
+.post-official-label {
+    font-weight: bold;
+    color: #92400e;
+    font-size: 0.9rem;
+}
+
+/* ========================
+   PÁGINA DE LOGIN / REGISTRO
+   ======================== */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--primary-color);
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.auth-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-header h1 {
+    color: var(--primary-color);
+    margin: 0 0 4px;
+    font-size: 1.8rem;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    font-weight: bold;
+    border-bottom-color: var(--primary-color);
+}
+
+.auth-form .form-group {
+    margin-bottom: 16px;
+}
+
+.auth-form label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.auth-form input,
+.auth-form select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.auth-error {
+    color: #c0392b;
+    font-size: 0.85rem;
+    min-height: 18px;
+    margin-bottom: 10px;
+}
+
+.btn-full {
+    width: 100%;
+    padding: 11px;
+    font-size: 1rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ========================
+   PÁGINA DE PERFIL
+   ======================== */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    max-width: 960px;
+    margin: 24px auto;
+    padding: 0 15px;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Sidebar izquierdo del perfil */
+.profile-sidebar {
+    position: sticky;
+    top: 70px;
+}
+
+.sidebar-title {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li { border-bottom: none; padding: 4px 0; }
+
+.sidebar-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: block;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-nav a:hover {
+    background: var(--bg-color);
+    color: var(--primary-color);
+}
+
+/* Cabecera del perfil */
+.profile-card { margin-bottom: 20px; }
+
+.profile-header {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    flex-shrink: 0;
+}
+
+.profile-main { min-width: 0; }
+
+.profile-info { flex: 1; min-width: 0; }
+
+.profile-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.profile-name-row h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.profile-post-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.profile-email {
+    font-size: 0.88rem;
+    margin: 4px 0 0;
+}
+
+.profile-role-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 6px;
+}
+
+.profile-role-label { font-weight: bold; font-size: 0.9rem; }
+
+/* Biografía */
+.profile-bio {
+    font-size: 0.92rem;
+    color: var(--text-dark);
+    margin: 8px 0 4px;
+    cursor: text;
+    border-radius: 4px;
+    padding: 4px 6px;
+    transition: background 0.15s;
+}
+
+.profile-bio:hover { background: #f0f2f5; }
+
+.profile-since { font-size: 0.82rem; margin: 6px 0 0; }
+
+/* Roles */
+.role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: bold;
+}
+
+.role-badge.role-alumno        { background: #dbeafe; color: #1e40af; }
+.role-badge.role-profesor      { background: #dcfce7; color: #166534; }
+.role-badge.role-administrador { background: #fef3c7; color: #92400e; }
+
+.role-select {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+
+.role-select:focus { outline: none; border-color: var(--primary-color); }
+
+.role-msg            { font-size: 0.82rem; }
+.role-msg--ok        { color: #166534; }
+.role-msg--error     { color: #c0392b; }
+
+/* Posts en el perfil */
+.posts-section-title {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.post-stats  { display: flex; gap: 8px; }
+
+.post-owner-actions {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.btn-text:hover { color: var(--text-dark); }
+
+/* Modal de edición */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal-box {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 28px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.modal-box h3 { margin: 0 0 16px; }
+
+.modal-box textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.modal-box textarea:focus { outline: none; border-color: var(--primary-color); }
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* Enlace al perfil desde el feed */
+.author-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.author-link:hover { text-decoration: underline; }
