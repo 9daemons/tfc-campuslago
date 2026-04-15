@@ -1,43 +1,45 @@
+// URL de tu servidor Express
+const API_URL = 'http://localhost:3000/api';
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar la carga de datos al abrir la página
     loadUserProfile();
     loadPosts();
     loadNotifications();
     loadChats();
 
-    // Event Listener para crear publicación
     document.getElementById('btnSubmitPost').addEventListener('click', createPost);
 });
 
-// Función para cargar los posts del muro
+// --- CARGAR POSTS DESDE EL BACKEND ---
 async function loadPosts() {
     const postsContainer = document.getElementById('postsContainer');
-    postsContainer.innerHTML = '<p>Cargando publicaciones...</p>';
+    postsContainer.innerHTML = '<p>Cargando publicaciones del Campus...</p>';
 
     try {
-        // Aquí iría tu endpoint real, por ejemplo: fetch('/api/posts')
-        // Simulamos una respuesta con Promesas para que veas el funcionamiento
-        const mockPosts = [
-            { id: 1, author: 'bessie.cooper', role: 'DAW2', content: '¡No quedan bocadillos en la máquina!', likes: 5 },
-            { id: 2, author: 'Campus Lago', role: 'Oficial', content: 'Recordatorio: Mañana es festivo.', likes: 20 }
-        ];
+        // Llamada real a tu API de Express
+        const response = await fetch(`${API_URL}/posts`);
+        const posts = await response.json();
 
-        postsContainer.innerHTML = ''; // Limpiar loader
+        postsContainer.innerHTML = ''; 
 
-        mockPosts.forEach(post => {
-            // Cada tarjeta de post cuenta con la opción de acceder al perfil, comentar o dar like [cite: 127]
+        if (posts.length === 0) {
+            postsContainer.innerHTML = '<p class="card">Aún no hay publicaciones. ¡Sé el primero!</p>';
+            return;
+        }
+
+        posts.forEach(post => {
             const postHTML = `
                 <div class="card post">
                     <div class="post-header">
-                        <strong><a href="/perfil/${post.author}">${post.author}</a></strong> 
-                        <span class="text-muted">(${post.role})</span>
+                        <strong>${post.author?.name || 'Usuario'}</strong> 
+                        <span class="text-muted"> — ${new Date(post.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div class="post-body">
                         <p>${post.content}</p>
                     </div>
                     <div class="post-footer">
-                        <button onclick="likePost(${post.id})">👍 ${post.likes} Likes</button>
-                        <button onclick="openComments(${post.id})">💬 Comentar</button>
+                        <button class="btn-action">👍 Like</button>
+                        <button class="btn-action">💬 Comentar</button>
                     </div>
                 </div>
             `;
@@ -46,47 +48,51 @@ async function loadPosts() {
 
     } catch (error) {
         console.error("Error cargando los posts:", error);
-        postsContainer.innerHTML = '<p>Error al cargar el muro.</p>';
+        postsContainer.innerHTML = '<p class="card" style="color:red;">Error al conectar con el servidor.</p>';
     }
 }
 
-// Función AJAX para subir un post
+// --- CREAR POST REAL EN LA BASE DE DATOS ---
 async function createPost() {
-    const content = document.getElementById('postContent').value;
-    const isAnonymous = document.getElementById('chkAnonymous').checked;
+    const contentInput = document.getElementById('postContent');
+    const content = contentInput.value;
+    
+    // El checkbox de anónimo lo usaremos más adelante cuando configures roles
+    const isAnonymous = document.getElementById('chkAnonymous')?.checked;
 
     if (!content.trim()) return alert("El post no puede estar vacío");
 
     try {
-        /* Ejemplo de petición real a tu API:
-        const response = await fetch('/api/posts', {
+        const response = await fetch(`${API_URL}/posts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: content, anonymous: isAnonymous })
+            body: JSON.stringify({ 
+                title: "Post de Campus", // Título genérico requerido por tu esquema actual
+                content: content, 
+                authorId: 1 // IMPORTANTE: Asegúrate de que exista un usuario con ID 1 en Supabase
+            })
         });
-        if(response.ok) { ... }
-        */
-        
-        alert("Publicación creada con éxito");
-        document.getElementById('postContent').value = ''; // Limpiar caja
-        loadPosts(); // Recargar el muro para ver el post nuevo
+
+        if (response.ok) {
+            contentInput.value = ''; // Limpiar textarea
+            loadPosts(); // Recargar el muro inmediatamente
+        } else {
+            const errorData = await response.json();
+            alert("Error al publicar: " + errorData.error);
+        }
 
     } catch (error) {
         console.error("Error al publicar:", error);
+        alert("El servidor no responde.");
     }
 }
 
-// Esqueletos para las otras funciones de carga
-async function loadNotifications() {
-    // Fetch a /api/notifications
-    // Mostrar en la lista de la tarjeta fija de notificaciones [cite: 107]
-}
-
-async function loadChats() {
-    // Fetch a /api/chats
-    // Si la propiedad "hasNewMessage" es true, podrías añadir una clase CSS para iluminarlo en verde [cite: 109]
-}
-
+// --- FUNCIONES PENDIENTES (Para cuando crees las tablas en Prisma) ---
 async function loadUserProfile() {
-    // Fetch a /api/user/me para rellenar la foto y si es profesor mostrar el checkbox de posts anónimos [cite: 118]
+    // Aquí podrías poner datos estáticos por ahora
+    document.getElementById('userName').innerText = "Enzo";
+    document.getElementById('userRole').innerText = "Estudiante DAW";
 }
+
+async function loadNotifications() { /* Pendiente */ }
+async function loadChats() { /* Pendiente */ }
