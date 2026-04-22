@@ -55,7 +55,7 @@ router.get('/feed/student', verifyToken, async (req, res) => {
 
 router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   const { content } = req.body;
-  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+  const image_url = req.file ? req.file.path : null;
 
   if (!content && !image_url)
     return res.status(400).json({ error: 'El post necesita contenido o imagen.' });

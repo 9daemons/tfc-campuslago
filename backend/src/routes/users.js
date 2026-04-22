@@ -49,7 +49,7 @@ router.get('/:username/posts', verifyToken, async (req, res) => {
 
 router.put('/me/profile', verifyToken, upload.single('avatar'), async (req, res) => {
   const { full_name, bio } = req.body;
-  const avatar = req.file ? `/uploads/${req.file.filename}` : undefined;
+  const avatar = req.file ? req.file.path : undefined;
 
   try {
     const updates = [];
