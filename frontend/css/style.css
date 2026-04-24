@@ -280,8 +280,9 @@ a { color: inherit; text-decoration: none; }
 }
 .notif-header button { font-size: .75rem; color: var(--primary); background: none; border: none; cursor: pointer; }
 
-.notif-item { padding: .7rem 1rem; border-bottom: 1px solid var(--border); font-size: .85rem; }
+.notif-item { padding: .7rem 1rem; border-bottom: 1px solid var(--border); font-size: .85rem; color: var(--text); }
 .notif-item.unread { background: #eff6ff; }
+.dark .notif-item.unread { background: #1e3a5f; }
 
 /* ── SEARCH RESULTS OVERLAY ───────────────────── */
 
