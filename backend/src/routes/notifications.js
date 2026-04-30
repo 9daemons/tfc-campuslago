@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
 
-// GET /api/notifications
 router.get('/', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
@@ -11,17 +10,16 @@ router.get('/', verifyToken, async (req, res) => {
       [req.user.id]
     );
     res.json(rows);
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
 
-// PUT /api/notifications/read-all
 router.put('/read-all', verifyToken, async (req, res) => {
   try {
     await db.execute('UPDATE notifications SET is_read = TRUE WHERE user_id = ?', [req.user.id]);
     res.json({ message: 'Notificaciones marcadas como leídas.' });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });

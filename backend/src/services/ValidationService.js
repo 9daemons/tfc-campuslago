@@ -1,6 +1,10 @@
 class ValidationService {
   static ALLOWED_DOMAIN = '@educa.madrid.org';
 
+  constructor(domain = ValidationService.ALLOWED_DOMAIN) {
+    this.domain = domain;
+  }
+
   static isValidEmail(email) {
     if (typeof email !== 'string') return false;
     return email.toLowerCase().endsWith(this.ALLOWED_DOMAIN);
@@ -36,6 +40,11 @@ class ValidationService {
     if (!email || !password) errors.push('Email y contraseña requeridos.');
     if (email && !this.isValidEmail(email)) errors.push('Solo se permiten cuentas @educa.madrid.org.');
     return errors;
+  }
+
+  isAllowedEmail(email) {
+    if (typeof email !== 'string') return false;
+    return email.toLowerCase().endsWith(this.domain);
   }
 }
 

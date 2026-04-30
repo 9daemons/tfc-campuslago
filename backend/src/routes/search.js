@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
 
-// GET /api/search?q=texto
 router.get('/', verifyToken, async (req, res) => {
   const q = (req.query.q || '').trim();
   if (!q || q.length < 2) return res.json({ users: [], posts: [] });
@@ -21,7 +20,7 @@ router.get('/', verifyToken, async (req, res) => {
       ORDER BY p.created_at DESC LIMIT 10
     `, [like]);
     res.json({ users, posts });
-  } catch (err) {
+  } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
 });
