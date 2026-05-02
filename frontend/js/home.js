@@ -51,7 +51,12 @@ function renderPost(p) {
         <strong>${isOfficial ? name : `<a href="profile.html?u=${escapeHtml(p.username)}" class="${nameClass}">${name}</a>`}</strong>
         <small>${timeAgo(p.created_at)}</small>
       </div>
-      ${isOwn ? `<div class="post-header-menu"><button type="button" class="btn-delete-post" data-id="${p.id}">⋯</button></div>` : ''}
+      ${isOwn ? `<div class="post-header-menu">
+        <button type="button" class="btn-post-menu" data-id="${p.id}">⋯</button>
+        <div class="post-menu-dropdown hidden">
+          <button type="button" class="btn-delete-post" data-id="${p.id}">Eliminar post</button>
+        </div>
+      </div>` : ''}
     </div>
     ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
     ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="">` : ''}
@@ -84,8 +89,18 @@ function attachPostActions(containerId) {
     btn.addEventListener('click', () => openComments(btn.dataset.id));
   });
 
+  container.querySelectorAll('.btn-post-menu').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const dropdown = btn.nextElementSibling;
+      document.querySelectorAll('.post-menu-dropdown').forEach(d => { if (d !== dropdown) d.classList.add('hidden'); });
+      dropdown.classList.toggle('hidden');
+    });
+  });
+
   container.querySelectorAll('.btn-delete-post').forEach(btn => {
     btn.addEventListener('click', async () => {
+      btn.closest('.post-menu-dropdown').classList.add('hidden');
       if (!confirm('¿Eliminar este post?')) return;
       try {
         await apiFetch(`/posts/${btn.dataset.id}`, { method: 'DELETE' });
@@ -311,5 +326,8 @@ document.addEventListener('click', (e) => {
   }
   if (!document.getElementById('btn-notif').contains(e.target) && !document.getElementById('notif-dropdown').contains(e.target)) {
     document.getElementById('notif-dropdown').classList.add('hidden');
+  }
+  if (!e.target.closest('.post-header-menu')) {
+    document.querySelectorAll('.post-menu-dropdown').forEach(d => d.classList.add('hidden'));
   }
 });

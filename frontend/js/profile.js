@@ -66,9 +66,16 @@ async function loadUserPosts() {
   const container = document.getElementById('profile-posts-list');
   try {
     const posts = await apiFetch(`/users/${targetUsername}/posts`);
+    const canDelete = isOwnProfile || user.role === 'admin';
     container.innerHTML = posts.length
       ? posts.map(p => `
-        <article class="post-card" style="margin-bottom:.8rem">
+        <article class="post-card" style="margin-bottom:.8rem" data-id="${p.id}">
+          ${canDelete ? `<div class="post-header-menu" style="display:flex;justify-content:flex-end;margin-bottom:.3rem">
+            <button type="button" class="btn-post-menu" data-id="${p.id}">⋯</button>
+            <div class="post-menu-dropdown hidden">
+              <button type="button" class="btn-delete-post" data-id="${p.id}">Eliminar post</button>
+            </div>
+          </div>` : ''}
           ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
           ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="">` : ''}
           <div class="post-actions">
@@ -78,6 +85,27 @@ async function loadUserPosts() {
           </div>
         </article>`).join('')
       : '<p class="loading">Sin posts aún.</p>';
+
+    if (canDelete) {
+      container.querySelectorAll('.btn-post-menu').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const dropdown = btn.nextElementSibling;
+          document.querySelectorAll('.post-menu-dropdown').forEach(d => { if (d !== dropdown) d.classList.add('hidden'); });
+          dropdown.classList.toggle('hidden');
+        });
+      });
+      container.querySelectorAll('.btn-delete-post').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.closest('.post-menu-dropdown').classList.add('hidden');
+          if (!confirm('¿Eliminar este post?')) return;
+          try {
+            await apiFetch(`/posts/${btn.dataset.id}`, { method: 'DELETE' });
+            btn.closest('.post-card').remove();
+          } catch (e) { alert(e.message); }
+        });
+      });
+    }
     const statPosts = document.getElementById('stat-posts');
     if (statPosts) statPosts.textContent = posts.length;
   } catch (e) {
@@ -118,5 +146,11 @@ document.getElementById('form-edit-profile')?.addEventListener('submit', async (
   } catch (err) {
     errEl.textContent = err.message;
     errEl.classList.remove('hidden');
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.post-header-menu')) {
+    document.querySelectorAll('.post-menu-dropdown').forEach(d => d.classList.add('hidden'));
   }
 });

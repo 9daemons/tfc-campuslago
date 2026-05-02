@@ -248,8 +248,21 @@ a { color: inherit; text-decoration: none; }
 .post-header-info { flex: 1; }
 .post-header-info strong { display: block; font-size: .9rem; }
 .post-header-info small { color: var(--text-muted); font-size: .75rem; }
-.post-header-menu { margin-left: auto; }
-.post-header-menu button { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
+.post-header-menu { margin-left: auto; position: relative; }
+.post-header-menu button { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; padding: .2rem .4rem; border-radius: 6px; }
+.post-header-menu button:hover { background: var(--bg); }
+.post-menu-dropdown {
+  position: absolute; right: 0; top: calc(100% + 4px);
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  min-width: 130px; z-index: 50; overflow: hidden;
+}
+.post-menu-dropdown button {
+  display: block; width: 100%; text-align: left;
+  padding: .6rem .9rem; font-size: .85rem;
+  background: none; border: none; cursor: pointer; color: var(--danger);
+}
+.post-menu-dropdown button:hover { background: var(--bg); }
 
 .post-content { font-size: .95rem; line-height: 1.5; margin-bottom: .7rem; white-space: pre-wrap; }
 
