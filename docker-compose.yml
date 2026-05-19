@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: campus_lago
+      MYSQL_USER: campus_user
+      MYSQL_PASSWORD: campus_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build: ./backend
+    env_file: ./backend/.env.docker
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "5500:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
