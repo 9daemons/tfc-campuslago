@@ -81,7 +81,7 @@ function attachPostActions(containerId) {
         btn.classList.toggle('liked', res.liked);
         const countEl = btn.querySelector('.like-count');
         countEl.textContent = parseInt(countEl.textContent) + (res.liked ? 1 : -1);
-      } catch {}
+      } catch (e) { console.error('Like error:', e.message); }
     });
   });
 
@@ -197,7 +197,7 @@ document.getElementById('form-comment').addEventListener('submit', async (e) => 
     await apiFetch(`/posts/${activeCommentPostId}/comments`, { method: 'POST', body: { content } });
     document.getElementById('comment-input').value = '';
     openComments(activeCommentPostId);
-  } catch {}
+  } catch (e) { alert(e.message); }
 });
 
 // Notificaciones

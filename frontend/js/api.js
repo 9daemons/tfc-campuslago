@@ -4,6 +4,16 @@ function logout() {
   window.location.href = '/index.html';
 }
 
+function httpErrorMessage(status) {
+  if (status === 400) return 'Solicitud incorrecta.';
+  if (status === 403) return 'No tienes permisos para realizar esta acción.';
+  if (status === 404) return 'El recurso solicitado no existe.';
+  if (status === 409) return 'Conflicto con el estado actual del recurso.';
+  if (status === 429) return 'Demasiadas solicitudes. Espera un momento.';
+  if (status >= 500) return 'Error interno del servidor. Inténtalo más tarde.';
+  return 'Error desconocido.';
+}
+
 async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('token');
   const headers = { ...(options.headers || {}) };
@@ -15,12 +25,21 @@ async function apiFetch(path, options = {}) {
     options.body = JSON.stringify(options.body);
   }
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  } catch {
+    throw new Error('Sin conexión con el servidor. Comprueba tu red.');
+  }
 
   if (res.status === 401) { logout(); return; }
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Error desconocido');
+  if (!res.ok) {
+    const err = new Error(data.error || httpErrorMessage(res.status));
+    err.status = res.status;
+    throw err;
+  }
   return data;
 }
 
