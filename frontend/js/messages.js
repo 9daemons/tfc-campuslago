@@ -86,7 +86,10 @@ async function loadMessages() {
     if (scrollBottom || data.messages.length < 5) {
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
-  } catch {}
+  } catch (e) {
+    const messagesEl = document.getElementById('chat-messages');
+    if (messagesEl) messagesEl.innerHTML = `<p class="loading">${e.message}</p>`;
+  }
 }
 
 async function sendMessage() {
