@@ -4,6 +4,23 @@ const db = require('../db/connection');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
+router.get('/me/suggested', verifyToken, async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT id, username, full_name, avatar, role
+      FROM users
+      WHERE id != ?
+        AND is_active = TRUE
+        AND id NOT IN (SELECT following_id FROM follows WHERE follower_id = ?)
+      ORDER BY RAND()
+      LIMIT 8
+    `, [req.user.id, req.user.id]);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
 router.get('/:username', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
