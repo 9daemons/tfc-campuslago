@@ -261,16 +261,7 @@ async function loadSuggestedUsers() {
   const container = document.getElementById('suggested-users');
   if (!container) return;
   try {
-    const [resA, resE] = await Promise.all([
-      apiFetch('/search?q=a'),
-      apiFetch('/search?q=e')
-    ]);
-    const seen = new Set([user.id]);
-    const candidates = [...(resA.users || []), ...(resE.users || [])].filter(u => {
-      if (seen.has(u.id)) return false;
-      seen.add(u.id);
-      return true;
-    }).slice(0, 5);
+    const candidates = await apiFetch('/users/me/suggested');
 
     if (!candidates.length) {
       container.innerHTML = '<small class="loading">Sin sugerencias.</small>';
