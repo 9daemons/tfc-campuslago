@@ -585,3 +585,50 @@ textarea { resize: vertical; }
   .footer-cols { grid-template-columns: 1fr; gap: 1.2rem; }
   .footer-bottom { flex-direction: column; gap: .25rem; text-align: center; }
 }
+
+/* ── TOAST ────────────────────────────────────── */
+
+.undo-toast {
+  position: fixed;
+  bottom: calc(var(--mobile-nav-h) + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  padding: .7rem 1.2rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: .88rem;
+  z-index: 300;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  animation: slideUp .2s ease;
+}
+.undo-toast button {
+  background: none;
+  border: 1px solid rgba(255,255,255,.35);
+  color: #fff;
+  border-radius: 4px;
+  padding: .2rem .65rem;
+  cursor: pointer;
+  font-size: .82rem;
+}
+.undo-toast button:hover { background: rgba(255,255,255,.1); }
+
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(16px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+
+.post-header-info a:visited { color: var(--text-muted); }
+
+.search-suggestions {
+  list-style: disc;
+  padding: .5rem 0 0 1.4rem;
+  color: var(--text-muted);
+  font-size: .85rem;
+  line-height: 1.9;
+  margin-top: .5rem;
+}

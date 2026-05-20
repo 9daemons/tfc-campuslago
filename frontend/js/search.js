@@ -15,6 +15,8 @@ document.getElementById('search-input').addEventListener('input', () => {
     document.getElementById('search-results-users').classList.add('hidden');
     document.getElementById('search-results-posts').classList.add('hidden');
     document.getElementById('search-empty').classList.remove('hidden');
+    document.getElementById('search-empty').innerHTML = '<p>Escribe algo para buscar</p>';
+    document.title = 'Buscar - Campus Lago';
     return;
   }
 
@@ -22,6 +24,7 @@ document.getElementById('search-input').addEventListener('input', () => {
 });
 
 async function performSearch(q) {
+  document.title = `Búsqueda: "${q}" - Campus Lago`;
   try {
     const data = await apiFetch(`/search?q=${encodeURIComponent(q)}`);
     document.getElementById('search-empty').classList.add('hidden');
@@ -62,11 +65,23 @@ async function performSearch(q) {
     }
 
     if (!data.users.length && !data.posts.length) {
-      document.getElementById('search-empty').innerHTML = '<p>Sin resultados para esa búsqueda.</p>';
-      document.getElementById('search-empty').classList.remove('hidden');
+      const emptyEl = document.getElementById('search-empty');
+      emptyEl.innerHTML = `<p>No se encontraron resultados para <strong>"${escapeHtml(q)}"</strong>.</p>
+        <ul class="search-suggestions">
+          <li>Comprueba que el nombre esté bien escrito</li>
+          <li>Prueba con el nombre de usuario en lugar del nombre completo</li>
+          <li>Usa términos más cortos o generales</li>
+        </ul>`;
+      emptyEl.classList.remove('hidden');
     }
   } catch (e) {
     document.getElementById('search-empty').innerHTML = `<p>${e.message}</p>`;
     document.getElementById('search-empty').classList.remove('hidden');
   }
+}
+
+const urlParam = new URLSearchParams(window.location.search).get('q');
+if (urlParam && urlParam.length >= 2) {
+  document.getElementById('search-input').value = urlParam;
+  performSearch(urlParam);
 }

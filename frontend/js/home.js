@@ -146,6 +146,10 @@ document.getElementById('form-post').addEventListener('submit', async (e) => {
   if (content) fd.append('content', content);
   if (imageFile) fd.append('image', imageFile);
 
+  const submitBtn = e.target.querySelector('[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = imageFile ? 'Subiendo...' : 'Publicando...';
+
   try {
     await apiFetch('/posts', { method: 'POST', body: fd });
     document.getElementById('modal-post').classList.add('hidden');
@@ -155,6 +159,9 @@ document.getElementById('form-post').addEventListener('submit', async (e) => {
   } catch (err) {
     errEl.textContent = err.message;
     errEl.classList.remove('hidden');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Publicar';
   }
 });
 
@@ -232,14 +239,17 @@ async function loadRecentMessages() {
   try {
     const convs = await apiFetch('/messages/conversations');
     if (!convs.length) { container.innerHTML = '<small class="loading">Sin mensajes.</small>'; return; }
-    container.innerHTML = convs.slice(0, 3).map(c => `
-      <div class="message-preview">
-        <img src="assets/default-avatar.svg" alt="">
+    container.innerHTML = convs.slice(0, 3).map(c => {
+      const dName = c.is_group ? (c.name || 'Grupo') : (c.other_name || c.other_username || 'Chat');
+      const dAvatar = !c.is_group && c.other_avatar ? avatarUrl(c.other_avatar) : 'assets/default-avatar.svg';
+      return `<div class="message-preview">
+        <img src="${dAvatar}" alt="">
         <div class="message-preview-text">
-          <strong>${escapeHtml(c.name || 'Chat')}</strong>
+          <strong>${escapeHtml(dName)}</strong>
           <small>${escapeHtml(c.last_message || '')}</small>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     container.querySelectorAll('.message-preview').forEach(el => {
       el.addEventListener('click', () => { window.location.href = 'messages.html'; });
     });
@@ -281,9 +291,18 @@ async function loadSuggestedUsers() {
       btn.addEventListener('click', async () => {
         try {
           await apiFetch(`/users/${btn.dataset.id}/follow`, { method: 'POST' });
+          const name = btn.closest('.suggested-user').querySelector('strong').textContent;
           btn.textContent = 'Siguiendo';
           btn.disabled = true;
           btn.classList.add('following');
+          showUndoToast(`Siguiendo a ${name}`, async () => {
+            try {
+              await apiFetch(`/users/${btn.dataset.id}/follow`, { method: 'POST' });
+              btn.textContent = 'Seguir';
+              btn.disabled = false;
+              btn.classList.remove('following');
+            } catch {}
+          });
         } catch {}
       });
     });

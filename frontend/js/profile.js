@@ -19,6 +19,7 @@ async function loadProfile() {
 
     document.getElementById('profile-avatar').src = avatarUrl(data.avatar);
     document.getElementById('profile-name').textContent = data.full_name || data.username;
+    document.title = `${data.full_name || data.username} - Campus Lago`;
     document.getElementById('profile-username').textContent = `@${data.username}`;
     document.getElementById('stat-followers').textContent = data.followers;
     document.getElementById('stat-following').textContent = data.following;
@@ -54,6 +55,16 @@ async function loadProfile() {
           btn.className = `btn-${res.following ? 'secondary' : 'primary'} btn-sm`;
           const cnt = document.getElementById('stat-followers');
           cnt.textContent = parseInt(cnt.textContent) + (res.following ? 1 : -1);
+          if (res.following) {
+            showUndoToast(`Siguiendo a ${data.full_name || data.username}`, async () => {
+              try {
+                await apiFetch(`/users/${data.id}/follow`, { method: 'POST' });
+                btn.textContent = 'Seguir';
+                btn.className = 'btn-primary btn-sm';
+                cnt.textContent = parseInt(cnt.textContent) - 1;
+              } catch {}
+            });
+          }
         } catch (e) { alert(e.message); }
       });
     }
@@ -154,3 +165,13 @@ document.addEventListener('click', (e) => {
     document.querySelectorAll('.post-menu-dropdown').forEach(d => d.classList.add('hidden'));
   }
 });
+
+const navSearchRedirect = document.getElementById('nav-search-redirect');
+if (navSearchRedirect) {
+  navSearchRedirect.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const q = navSearchRedirect.value.trim();
+      if (q.length >= 2) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+  });
+}
