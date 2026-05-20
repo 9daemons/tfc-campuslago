@@ -70,3 +70,19 @@ function timeAgo(dateStr) {
 function escapeHtml(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+function showUndoToast(message, onUndo) {
+  const existing = document.getElementById('undo-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'undo-toast';
+  toast.className = 'undo-toast';
+  toast.innerHTML = `<span>${escapeHtml(message)}</span><button type="button">Deshacer</button>`;
+  document.body.appendChild(toast);
+  const timer = setTimeout(() => toast.remove(), 4000);
+  toast.querySelector('button').addEventListener('click', () => {
+    clearTimeout(timer);
+    toast.remove();
+    onUndo();
+  });
+}

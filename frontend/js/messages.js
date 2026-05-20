@@ -189,3 +189,13 @@ document.getElementById('btn-create-conv').addEventListener('click', async () =>
     openConversation(data.id);
   } catch (e) { alert(e.message); }
 });
+
+const navSearchRedirect = document.getElementById('nav-search-redirect');
+if (navSearchRedirect) {
+  navSearchRedirect.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const q = navSearchRedirect.value.trim();
+      if (q.length >= 2) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+  });
+}
