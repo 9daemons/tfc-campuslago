@@ -17,14 +17,22 @@ async function loadConversations() {
   try {
     const convs = await apiFetch('/messages/conversations');
     list.innerHTML = convs.length
-      ? convs.map(c => `
-        <div class="conv-item ${c.id == activeConvId ? 'active' : ''}" data-id="${c.id}">
-          <img src="assets/default-avatar.svg" alt="">
-          <div class="conv-info">
-            <strong>${escapeHtml(c.name || 'Chat')}</strong>
-            <small>${escapeHtml(c.last_message || '')}</small>
-          </div>
-        </div>`).join('')
+      ? convs.map(c => {
+          const displayName = c.is_group
+            ? (c.name || 'Grupo')
+            : (c.other_name || c.other_username || 'Chat');
+          const displayAvatar = !c.is_group && c.other_avatar
+            ? avatarUrl(c.other_avatar)
+            : 'assets/default-avatar.svg';
+          return `
+            <div class="conv-item ${c.id == activeConvId ? 'active' : ''}" data-id="${c.id}">
+              <img src="${displayAvatar}" alt="">
+              <div class="conv-info">
+                <strong>${escapeHtml(displayName)}</strong>
+                <small>${escapeHtml(c.last_message || '')}</small>
+              </div>
+            </div>`;
+        }).join('')
       : '<div class="loading">Sin conversaciones.</div>';
 
     list.querySelectorAll('.conv-item').forEach(item => {

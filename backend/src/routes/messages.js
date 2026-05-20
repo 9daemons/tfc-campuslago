@@ -8,12 +8,15 @@ router.get('/conversations', verifyToken, async (req, res) => {
     const [rows] = await db.execute(`
       SELECT c.id, c.is_group, c.name,
         (SELECT m.content FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) AS last_message,
-        (SELECT m.created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at
+        (SELECT m.created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at,
+        (SELECT u.full_name FROM conversation_members cm2 JOIN users u ON u.id = cm2.user_id WHERE cm2.conversation_id = c.id AND cm2.user_id != ? LIMIT 1) AS other_name,
+        (SELECT u.username FROM conversation_members cm2 JOIN users u ON u.id = cm2.user_id WHERE cm2.conversation_id = c.id AND cm2.user_id != ? LIMIT 1) AS other_username,
+        (SELECT u.avatar FROM conversation_members cm2 JOIN users u ON u.id = cm2.user_id WHERE cm2.conversation_id = c.id AND cm2.user_id != ? LIMIT 1) AS other_avatar
       FROM conversations c
       JOIN conversation_members cm ON cm.conversation_id = c.id
       WHERE cm.user_id = ?
       ORDER BY last_message_at DESC
-    `, [req.user.id]);
+    `, [req.user.id, req.user.id, req.user.id, req.user.id]);
     res.json(rows);
   } catch (e) {
     res.status(500).json({ error: 'Error.' });
