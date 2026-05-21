@@ -50,7 +50,22 @@ function getUser() {
 function requireAuth() {
   const token = localStorage.getItem('token');
   if (!token) { logout(); return false; }
+  refreshUser();
   return true;
+}
+
+function refreshUser() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data) return;
+      localStorage.setItem('user', JSON.stringify(data));
+      const img = document.getElementById('nav-avatar-img');
+      if (img) img.src = avatarUrl(data.avatar);
+    })
+    .catch(() => {});
 }
 
 function avatarUrl(path) {
