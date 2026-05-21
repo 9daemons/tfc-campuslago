@@ -14,7 +14,7 @@ Promise.all([
   loadUnifiedFeed(),
   isAdmin ? loadAdminRequests() : loadRecentMessages(),
   loadNotifications(),
-  loadSuggestedUsers()
+  isAdmin ? loadAdminStats() : loadSuggestedUsers()
 ]);
 
 async function loadUnifiedFeed() {
@@ -53,25 +53,25 @@ function renderPost(p) {
   <article class="post-card${isOfficial ? ' official' : ''}" data-id="${p.id}">
     ${isOfficial ? '<span class="post-official-label">📢 Noticia del centro</span>' : ''}
     <div class="post-header">
-      <img src="${av}" alt="">
+      <img src="${av}" alt="Avatar de ${escapeHtml(name)}">
       <div class="post-header-info">
         <strong>${isOfficial ? name : `<a href="profile.html?u=${escapeHtml(p.username)}" class="${nameClass}">${name}</a>`}</strong>
         <small>${timeAgo(p.created_at)}</small>
       </div>
       ${isOwn ? `<div class="post-header-menu">
-        <button type="button" class="btn-post-menu" data-id="${p.id}">⋯</button>
-        <div class="post-menu-dropdown hidden">
-          <button type="button" class="btn-delete-post" data-id="${p.id}">Eliminar post</button>
+        <button type="button" class="btn-post-menu" data-id="${p.id}" aria-label="Opciones del post">⋯</button>
+        <div class="post-menu-dropdown hidden" role="menu">
+          <button type="button" class="btn-delete-post" data-id="${p.id}" role="menuitem">Eliminar post</button>
         </div>
       </div>` : ''}
     </div>
     ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
-    ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="">` : ''}
+    ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="Imagen del post de ${escapeHtml(name)}">` : ''}
     <div class="post-actions">
-      <button type="button" class="post-action-btn btn-like ${p.liked ? 'liked' : ''}" data-id="${p.id}">
+      <button type="button" class="post-action-btn btn-like ${p.liked ? 'liked' : ''}" data-id="${p.id}" aria-label="Me gusta, ${p.likes_count}">
         ❤ <span class="like-count">${p.likes_count}</span>
       </button>
-      <button type="button" class="post-action-btn btn-comment" data-id="${p.id}">
+      <button type="button" class="post-action-btn btn-comment" data-id="${p.id}" aria-label="Comentarios, ${p.comments_count}">
         💬 ${p.comments_count}
       </button>
     </div>
@@ -185,7 +185,7 @@ async function openComments(postId) {
       ? comments.map(c => `
         <article class="post-card comment-card">
           <div class="post-header">
-            <img src="${avatarUrl(c.avatar)}" alt="" class="comment-avatar">
+            <img src="${avatarUrl(c.avatar)}" alt="Avatar de ${escapeHtml(c.username)}" class="comment-avatar">
             <div class="post-header-info">
               <strong>${escapeHtml(c.username)}</strong>
               <small>${timeAgo(c.created_at)}</small>
@@ -250,7 +250,7 @@ async function loadRecentMessages() {
       const dName = c.is_group ? (c.name || 'Grupo') : (c.other_name || c.other_username || 'Chat');
       const dAvatar = !c.is_group && c.other_avatar ? avatarUrl(c.other_avatar) : 'assets/default-avatar.svg';
       return `<div class="message-preview">
-        <img src="${dAvatar}" alt="">
+        <img src="${dAvatar}" alt="Avatar de ${escapeHtml(dName)}">
         <div class="message-preview-text">
           <strong>${escapeHtml(dName)}</strong>
           <small>${escapeHtml(c.last_message || '')}</small>
@@ -320,6 +320,32 @@ async function loadAdminRequests() {
   }
 }
 
+// Estadísticas para admin
+async function loadAdminStats() {
+  const container = document.getElementById('suggested-users');
+  const title = document.querySelector('.sidebar-right h2');
+  if (title) title.textContent = 'Estadísticas';
+  if (!container) return;
+  try {
+    const s = await apiFetch('/users/admin/stats');
+    container.innerHTML = `
+      <div class="admin-stat-item">
+        <span class="admin-stat-number">${s.users}</span>
+        <span class="admin-stat-label">Usuarios activos</span>
+      </div>
+      <div class="admin-stat-item">
+        <span class="admin-stat-number">${s.posts}</span>
+        <span class="admin-stat-label">Publicaciones totales</span>
+      </div>
+      <div class="admin-stat-item ${s.pending > 0 ? 'admin-stat-pending' : ''}">
+        <span class="admin-stat-number">${s.pending}</span>
+        <span class="admin-stat-label">Solicitudes pendientes</span>
+      </div>`;
+  } catch {
+    container.innerHTML = '<small class="loading">No se pudieron cargar las estadísticas.</small>';
+  }
+}
+
 // Sugerencias de usuarios
 async function loadSuggestedUsers() {
   const container = document.getElementById('suggested-users');
@@ -334,7 +360,7 @@ async function loadSuggestedUsers() {
 
     container.innerHTML = candidates.map(u => `
       <div class="suggested-user">
-        <img src="${avatarUrl(u.avatar)}" alt="">
+        <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.full_name || u.username)}">
         <div class="suggested-user-info">
           <strong>${escapeHtml(u.full_name || u.username)}</strong>
           <small>@${escapeHtml(u.username)}</small>
@@ -379,12 +405,12 @@ navSearch.addEventListener('input', () => {
     try {
       const data = await apiFetch(`/search?q=${encodeURIComponent(q)}`);
       const items = [
-        ...data.users.map(u => `<div class="search-result-item" onclick="window.location.href='profile.html?u=${escapeHtml(u.username)}'">
-          <img src="${avatarUrl(u.avatar)}" alt="">
+        ...data.users.map(u => `<div class="search-result-item" role="option" onclick="window.location.href='profile.html?u=${escapeHtml(u.username)}'">
+          <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.username)}">
           <div><strong>${escapeHtml(u.username)}</strong><br><small>${escapeHtml(u.full_name || '')}</small></div>
         </div>`),
-        ...data.posts.map(p => `<div class="search-result-item">
-          <img src="${avatarUrl(p.avatar)}" alt="">
+        ...data.posts.map(p => `<div class="search-result-item" role="option">
+          <img src="${avatarUrl(p.avatar)}" alt="Avatar de ${escapeHtml(p.username)}">
           <div><strong>${escapeHtml(p.username)}</strong><br><small>${escapeHtml(p.content?.substring(0, 60) || '')}</small></div>
         </div>`)
       ];
@@ -404,4 +430,13 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.post-header-menu')) {
     document.querySelectorAll('.post-menu-dropdown').forEach(d => d.classList.add('hidden'));
   }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  document.getElementById('modal-post').classList.add('hidden');
+  document.getElementById('modal-comments').classList.add('hidden');
+  document.getElementById('notif-dropdown').classList.add('hidden');
+  searchResultsEl.classList.add('hidden');
+  document.querySelectorAll('.post-menu-dropdown').forEach(d => d.classList.add('hidden'));
 });

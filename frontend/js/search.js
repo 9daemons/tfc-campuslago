@@ -34,7 +34,7 @@ async function performSearch(q) {
     if (data.users.length) {
       usersEl.innerHTML = data.users.map(u => `
         <div class="user-result" onclick="window.location.href='profile.html?u=${escapeHtml(u.username)}'">
-          <img src="${avatarUrl(u.avatar)}" alt="">
+          <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.full_name || u.username)}">
           <div>
             <strong>${escapeHtml(u.full_name || u.username)}</strong>
             <br><small>@${escapeHtml(u.username)} · <span class="role-badge ${u.role}">${{ student: 'Alumno', teacher: 'Profesor', admin: 'Admin' }[u.role] || u.role}</span></small>
@@ -51,7 +51,7 @@ async function performSearch(q) {
       postsEl.innerHTML = data.posts.map(p => `
         <div class="post-card" style="margin-bottom:.5rem">
           <div class="post-header">
-            <img src="${avatarUrl(p.avatar)}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
+            <img src="${avatarUrl(p.avatar)}" alt="Avatar de ${escapeHtml(p.username)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
             <div class="post-header-info">
               <strong>${escapeHtml(p.username)}</strong>
               <small>${timeAgo(p.created_at)}</small>

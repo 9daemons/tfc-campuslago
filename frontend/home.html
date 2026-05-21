@@ -14,6 +14,8 @@
 </head>
 <body class="app-body">
 
+  <a href="#main-content" class="skip-nav">Saltar al contenido</a>
+
   <!-- Navbar -->
   <nav class="navbar">
     <div class="nav-left">
@@ -45,7 +47,7 @@
   <div class="search-results hidden" id="search-results" role="region" aria-label="Resultados de búsqueda"></div>
 
   <!-- Main layout -->
-  <main class="app-main">
+  <main class="app-main" id="main-content">
 
     <aside class="sidebar-left" aria-label="Panel lateral">
       <div class="sidebar-section">
@@ -163,10 +165,10 @@
   </div>
 
   <!-- Modal comentarios -->
-  <div class="modal-overlay hidden" id="modal-comments" role="dialog" aria-modal="true" aria-label="Comentarios">
+  <div class="modal-overlay hidden" id="modal-comments" role="dialog" aria-modal="true" aria-labelledby="modal-comments-title">
     <div class="modal">
       <div class="modal-header">
-        <h3>Comentarios</h3>
+        <h3 id="modal-comments-title">Comentarios</h3>
         <button type="button" class="modal-close" id="btn-close-comments" aria-label="Cerrar">✕</button>
       </div>
       <div id="comments-list"></div>
