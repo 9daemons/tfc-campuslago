@@ -95,7 +95,7 @@ a { color: inherit; text-decoration: none; }
   min-height: 48px;
 }
 .btn-primary:hover { background: var(--primary-dark); }
-.btn-primary.btn-sm { width: auto; padding: .4rem .9rem; font-size: .85rem; margin-top: 0; }
+.btn-primary.btn-sm, .btn-secondary.btn-sm { width: auto; padding: .4rem .9rem; font-size: .85rem; margin-top: 0; }
 
 .btn-link { background: none; border: none; color: var(--primary); cursor: pointer; font-size: .9rem; display: block; margin: .4rem auto 0; text-align: center; padding: .75rem 1rem; min-height: 48px; }
 .btn-link:hover { text-decoration: underline; }
@@ -108,6 +108,8 @@ a { color: inherit; text-decoration: none; }
 
 .btn-danger { background: var(--danger); }
 .btn-danger:hover { background: #dc2626; }
+.btn-logout-red { border-color: var(--danger); color: var(--danger); }
+.btn-logout-red:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
 /* ── NAVBAR ───────────────────────────────────── */
 
@@ -355,7 +357,8 @@ textarea { resize: vertical; }
 
 .profile-cover { height: 120px; background: linear-gradient(135deg, #1e40af, #3b82f6); }
 
-.profile-info { display: flex; align-items: flex-start; gap: 1rem; padding: .8rem 1.2rem; }
+.profile-info { display: flex; align-items: flex-start; gap: 1rem; padding: .8rem 1.2rem; flex-wrap: wrap; }
+.profile-actions { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
 
 .profile-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--card-bg); margin-top: -40px; }
 

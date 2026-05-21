@@ -32,8 +32,8 @@ async function loadProfile() {
 
     const actions = document.getElementById('profile-actions');
     if (isOwnProfile) {
-      actions.innerHTML = `<button class="btn-secondary" id="btn-edit-profile">Editar perfil</button>
-        <button class="btn-danger btn-primary btn-sm" id="btn-logout" style="margin-left:.5rem">Cerrar sesión</button>`;
+      actions.innerHTML = `<button class="btn-secondary btn-sm" id="btn-edit-profile">Editar perfil</button>
+        <button class="btn-secondary btn-sm btn-logout-red" id="btn-logout">Cerrar sesión</button>`;
       document.getElementById('btn-edit-profile').addEventListener('click', () => {
         document.getElementById('edit-name').value = data.full_name || '';
         document.getElementById('edit-bio').value = data.bio || '';
@@ -146,15 +146,19 @@ document.getElementById('form-edit-profile')?.addEventListener('submit', async (
   try {
     await apiFetch('/users/me/profile', { method: 'PUT', body: fd });
     document.getElementById('modal-edit').classList.add('hidden');
-    loadProfile();
-    loadUserPosts();
 
+    const fresh = await apiFetch(`/users/${user.username}`);
     const stored = getUser();
     if (stored) {
-      stored.full_name = full_name;
-      stored.bio = bio;
+      stored.full_name = fresh.full_name || full_name;
+      stored.bio = fresh.bio || bio;
+      stored.avatar = fresh.avatar || stored.avatar;
       localStorage.setItem('user', JSON.stringify(stored));
+      document.getElementById('nav-avatar-img').src = avatarUrl(stored.avatar);
     }
+
+    loadProfile();
+    loadUserPosts();
   } catch (err) {
     errEl.textContent = err.message;
     errEl.classList.remove('hidden');
