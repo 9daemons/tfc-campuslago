@@ -26,7 +26,7 @@ async function loadConversations() {
             : 'assets/default-avatar.svg';
           return `
             <div class="conv-item ${c.id == activeConvId ? 'active' : ''}" data-id="${c.id}">
-              <img src="${displayAvatar}" alt="">
+              <img src="${displayAvatar}" alt="Avatar de ${escapeHtml(displayName)}">
               <div class="conv-info">
                 <strong>${escapeHtml(displayName)}</strong>
                 <small>${escapeHtml(c.last_message || '')}</small>
@@ -141,8 +141,8 @@ document.getElementById('conv-search').addEventListener('input', () => {
       const resultsEl = document.getElementById('conv-search-results');
       resultsEl.innerHTML = data.users
         .filter(u => u.id != user.id && !selectedUsers.find(s => s.id === u.id))
-        .map(u => `<div class="conv-search-result" data-id="${u.id}" data-name="${escapeHtml(u.full_name || u.username)}" data-username="${escapeHtml(u.username)}">
-          <img src="${avatarUrl(u.avatar)}" alt="">
+        .map(u => `<div class="conv-search-result" role="option" data-id="${u.id}" data-name="${escapeHtml(u.full_name || u.username)}" data-username="${escapeHtml(u.username)}">
+          <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.full_name || u.username)}">
           <span>${escapeHtml(u.full_name || u.username)}</span>
         </div>`).join('');
 
@@ -162,7 +162,7 @@ function renderSelectedUsers() {
   document.getElementById('selected-users').innerHTML = selectedUsers.map(u => `
     <div class="selected-user-chip" data-id="${u.id}">
       ${escapeHtml(u.name)}
-      <button data-id="${u.id}">✕</button>
+      <button data-id="${u.id}" aria-label="Quitar a ${escapeHtml(u.name)}">✕</button>
     </div>`).join('');
 
   document.querySelectorAll('.selected-user-chip button').forEach(btn => {
@@ -188,6 +188,10 @@ document.getElementById('btn-create-conv').addEventListener('click', async () =>
     await loadConversations();
     openConversation(data.id);
   } catch (e) { alert(e.message); }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('modal-new-conv').classList.add('hidden');
 });
 
 const navSearchRedirect = document.getElementById('nav-search-redirect');

@@ -110,6 +110,17 @@ router.post('/:id/follow', verifyToken, async (req, res) => {
   }
 });
 
+router.get('/admin/stats', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const [[{ users }]] = await db.execute("SELECT COUNT(*) AS users FROM users WHERE role != 'admin' AND is_active = TRUE");
+    const [[{ posts }]] = await db.execute("SELECT COUNT(*) AS posts FROM posts");
+    const [[{ pending }]] = await db.execute("SELECT COUNT(*) AS pending FROM registration_requests WHERE status = 'pending'");
+    res.json({ users, posts, pending });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
 router.get('/admin/requests', verifyToken, requireRole('admin'), async (req, res) => {
   try {
     const [rows] = await db.execute(

@@ -5,6 +5,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const targetUsername = urlParams.get('u') || user?.username;
 const isOwnProfile = targetUsername === user?.username;
 
+
 if (user) {
   document.getElementById('nav-avatar-img').src = avatarUrl(user.avatar);
   document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
@@ -70,7 +71,11 @@ async function loadProfile() {
       });
     }
   } catch (e) {
-    document.getElementById('profile-name').textContent = 'Usuario no encontrado';
+    if (!isOwnProfile && user?.role !== 'admin') {
+      window.location.href = 'https://www.educa2.madrid.org/web/centro.ies.ellago.madrid';
+    } else {
+      document.getElementById('profile-name').textContent = 'Usuario no encontrado';
+    }
   }
 }
 
@@ -89,7 +94,7 @@ async function loadUserPosts() {
             </div>
           </div>` : ''}
           ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
-          ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="">` : ''}
+          ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="Imagen del post">` : ''}
           <div class="post-actions">
             <span class="post-action-btn">❤ ${p.likes_count}</span>
             <span class="post-action-btn">💬 ${p.comments_count}</span>
@@ -128,6 +133,10 @@ async function loadUserPosts() {
 // Edit profile modal
 document.getElementById('btn-close-edit')?.addEventListener('click', () => {
   document.getElementById('modal-edit').classList.add('hidden');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('modal-edit')?.classList.add('hidden');
 });
 
 document.getElementById('form-edit-profile')?.addEventListener('submit', async (e) => {
