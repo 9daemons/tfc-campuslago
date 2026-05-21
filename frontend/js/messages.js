@@ -10,6 +10,21 @@ if (user) {
   document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
 }
 
+const isMobile = () => window.innerWidth <= 600;
+
+// En móvil, mostrar lista de conversaciones por defecto
+if (isMobile()) {
+  document.querySelector('.conversations-panel').classList.add('show');
+}
+
+function showConversationsList() {
+  document.querySelector('.conversations-panel').classList.add('show');
+  const panel = document.getElementById('chat-panel');
+  panel.innerHTML = '<div class="chat-empty"><p>Selecciona una conversación</p></div>';
+  activeConvId = null;
+  clearInterval(pollInterval);
+}
+
 loadConversations();
 
 async function loadConversations() {
@@ -48,14 +63,24 @@ async function openConversation(id) {
   clearInterval(pollInterval);
   loadConversations();
 
+  // En móvil: ocultar lista, mostrar chat
+  if (isMobile()) {
+    document.querySelector('.conversations-panel').classList.remove('show');
+  }
+
   const panel = document.getElementById('chat-panel');
   panel.innerHTML = `
-    <div class="chat-header" id="chat-header">Cargando...</div>
+    <div class="chat-header" id="chat-header">
+      <button class="chat-back-btn" id="btn-chat-back" aria-label="Volver a conversaciones">←</button>
+      <span id="chat-header-name">Cargando...</span>
+    </div>
     <div class="chat-messages" id="chat-messages"></div>
     <div class="chat-input-area">
       <input type="text" class="chat-input" id="chat-input" placeholder="Escribe un mensaje...">
       <button class="btn-primary btn-sm" id="btn-send">Enviar</button>
     </div>`;
+
+  document.getElementById('btn-chat-back').addEventListener('click', showConversationsList);
 
   document.getElementById('btn-send').addEventListener('click', sendMessage);
   document.getElementById('chat-input').addEventListener('keydown', (e) => {
@@ -71,10 +96,10 @@ async function loadMessages() {
   try {
     const data = await apiFetch(`/messages/conversations/${activeConvId}`);
 
-    const header = document.getElementById('chat-header');
-    if (header) {
+    const headerName = document.getElementById('chat-header-name');
+    if (headerName) {
       const others = data.members.filter(m => m.id != user.id);
-      header.textContent = others.map(m => m.full_name || m.username).join(', ') || 'Chat';
+      headerName.textContent = others.map(m => m.full_name || m.username).join(', ') || 'Chat';
     }
 
     const messagesEl = document.getElementById('chat-messages');

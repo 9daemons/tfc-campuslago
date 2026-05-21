@@ -467,7 +467,27 @@ textarea { resize: vertical; }
 .chat-panel { display: flex; flex-direction: column; background: var(--bg); }
 .chat-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
 
-.chat-header { padding: 1rem; background: var(--card-bg); border-bottom: 1px solid var(--border); font-weight: 600; }
+.chat-header {
+  padding: .75rem 1rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.chat-back-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: var(--primary);
+  padding: .1rem .3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
 
 .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .5rem; }
 
@@ -572,17 +592,108 @@ textarea { resize: vertical; }
 }
 
 @media (max-width: 700px) {
-  .app-main { grid-template-columns: 1fr; }
+  .app-main {
+    grid-template-columns: 1fr;
+    padding: 0 .75rem;
+    margin: .6rem auto;
+    gap: 0;
+  }
   .sidebar-left { display: none; }
   .mobile-nav { display: flex; }
+
+  /* Ocultar búsqueda del navbar — hay página de búsqueda dedicada */
+  .nav-center { display: none; }
+  .navbar { padding: 0 .9rem; }
+
+  /* Feed sin scroll interno — la página ya scrollea */
+  #feed-unified {
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+
+  /* Post cards: padding más justo */
+  .post-card { padding: .85rem .9rem; }
+  .post-actions { gap: .6rem; }
+
+  /* Notificaciones: anclar a los bordes de pantalla */
+  .notif-dropdown {
+    left: .5rem;
+    right: .5rem;
+    width: auto;
+  }
+
+  /* Resultados de búsqueda inline */
+  .search-results {
+    left: .5rem;
+    right: .5rem;
+    width: auto;
+    transform: none;
+  }
+
+  /* Perfil: acciones en línea propia debajo del nombre */
+  .profile-info { gap: .6rem; padding: .75rem; flex-wrap: wrap; }
+  .profile-actions {
+    margin-left: 0;
+    width: 100%;
+    padding-top: .25rem;
+  }
+  .profile-main { padding: 0 .75rem 2rem; margin: .6rem auto; }
+  .profile-stats .stat span { font-size: 1.35rem; }
+
+  /* Página de búsqueda */
+  .search-main { padding: 0 .75rem; margin: .75rem auto; }
+
+  /* Admin */
+  .admin-main { padding: 1rem .75rem 4rem; }
 }
 
 @media (max-width: 600px) {
   .messages-main { grid-template-columns: 1fr; }
   .conversations-panel { display: none; }
   .conversations-panel.show { display: block; }
-  .auth-container { border-radius: 0; min-height: 100vh; max-width: 100%; padding: 2rem 1.5rem; }
-  .modal { border-radius: 0; max-height: 100vh; }
+
+  /* Auth: ocupa toda la pantalla */
+  .auth-container {
+    border-radius: 0;
+    min-height: 100vh;
+    max-width: 100%;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Modal: hoja desde abajo */
+  .modal-overlay { align-items: flex-end; }
+  .modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    padding: 1.25rem 1rem 1.75rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Mensajes: chat ocupa todo el alto disponible */
+  .messages-main {
+    height: calc(100vh - var(--navbar-h) - var(--mobile-nav-h));
+  }
+  .chat-panel { height: 100%; }
+  .conversations-panel { height: 100%; overflow-y: auto; }
+  .chat-back-btn { display: block; }
+}
+
+/* Teléfonos muy pequeños (<= 380px) */
+@media (max-width: 380px) {
+  .post-card { padding: .7rem .75rem; }
+  .post-action-btn { font-size: .8rem; padding: .25rem .35rem; }
+  .profile-stats .stat span { font-size: 1.15rem; }
+  .btn-primary.btn-sm, .btn-secondary.btn-sm {
+    padding: .35rem .7rem;
+    font-size: .8rem;
+  }
+  .comment-form input { font-size: .85rem; }
+  .auth-logo h1, .auth-header h1 { font-size: 1.5rem; }
 }
 
 /* footer */
