@@ -75,7 +75,7 @@ a { color: inherit; text-decoration: none; }
 .form-group textarea,
 .form-group select {
   width: 100%; padding: .65rem .9rem; border: 2px solid var(--border);
-  border-radius: 8px; font-size: .95rem; transition: border-color .2s; background: var(--card-bg);
+  border-radius: 8px; font-size: .95rem; transition: border-color .2s; background: var(--card-bg); color: var(--text);
 }
 .form-group input:focus,
 .form-group textarea:focus { border-color: var(--primary); outline: none; }
