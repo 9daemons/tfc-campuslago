@@ -37,7 +37,7 @@ async function performSearch(q) {
           <img src="${avatarUrl(u.avatar)}" alt="">
           <div>
             <strong>${escapeHtml(u.full_name || u.username)}</strong>
-            <br><small>@${escapeHtml(u.username)} · <span class="role-badge ${u.role}">${u.role}</span></small>
+            <br><small>@${escapeHtml(u.username)} · <span class="role-badge ${u.role}">${{ student: 'Alumno', teacher: 'Profesor', admin: 'Admin' }[u.role] || u.role}</span></small>
           </div>
         </div>`).join('');
       usersSection.classList.remove('hidden');
