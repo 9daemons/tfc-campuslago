@@ -4,11 +4,6 @@ const db = require('../db/connection');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-router.post('/admin/fix-anon', verifyToken, requireRole('admin'), async (req, res) => {
-  const [result] = await db.execute("UPDATE posts SET is_anonymous = 0 WHERE post_type = 'official'");
-  res.json({ updated: result.affectedRows });
-});
-
 router.get('/me/suggested', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(`
