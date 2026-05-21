@@ -77,7 +77,7 @@ async function loadUnifiedFeed() {
 function renderPost(p) {
   const isOfficial = p._type === 'official';
   const isOwn = user.role === 'admin' || (!isOfficial && p.user_id == user.id);
-  const nameClass = (!isOfficial && p.role === 'teacher') ? 'post-author-teacher' : '';
+  const nameClass = '';
   const name = isOfficial
     ? (p.is_anonymous ? 'IES El Lago' : escapeHtml(p.full_name || p.username))
     : escapeHtml(p.full_name || p.username);
@@ -89,7 +89,7 @@ function renderPost(p) {
     <div class="post-header">
       <img src="${av}" alt="Avatar de ${escapeHtml(name)}">
       <div class="post-header-info">
-        <strong>${isOfficial ? name : `<a href="profile.html?u=${escapeHtml(p.username)}" class="${nameClass}">${name}</a>`}</strong>
+        <strong>${isOfficial ? name : `<a href="profile.html?u=${escapeHtml(p.username)}">${name}</a>`}${!isOfficial && p.role === 'teacher' ? ' <span class="role-badge teacher">Profesor</span>' : ''}</strong>
         <small>${timeAgo(p.created_at)}</small>
       </div>
       ${isOwn ? `<div class="post-header-menu">
