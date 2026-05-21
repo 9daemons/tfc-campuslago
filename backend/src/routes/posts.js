@@ -63,7 +63,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     // el admin siempre publica como noticia oficial
     const type = req.user.role === 'admin' ? 'official' : 'student';
-    const anon = req.user.role === 'admin' ? 1 : 0;
+    const anon = 0;
 
     const [result] = await db.execute(
       'INSERT INTO posts (user_id, content, image_url, post_type, is_anonymous) VALUES (?, ?, ?, ?, ?)',
