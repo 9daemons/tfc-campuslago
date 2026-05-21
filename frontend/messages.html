@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="icon" href="assets/icon.ico">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <script src="js/theme.js"></script>
 </head>
 <body class="app-body">
@@ -25,7 +26,7 @@
       <input type="search" id="nav-search-redirect" placeholder="Buscar..." class="nav-search-input" aria-label="Buscar usuarios o publicaciones">
     </div>
     <div class="nav-right">
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
       <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
         <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
@@ -55,7 +56,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="modal-conv-title">Nueva conversación</h3>
-        <button type="button" class="modal-close" id="btn-close-conv" aria-label="Cerrar">✕</button>
+        <button type="button" class="modal-close" id="btn-close-conv" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="form-group">
         <label for="conv-search">Buscar usuario</label>
@@ -78,10 +79,10 @@
   </div>
 
   <nav class="mobile-nav" aria-label="Navegación inferior">
-    <a href="home.html" class="mobile-nav-item" aria-label="Inicio">🏠</a>
-    <a href="search.html" class="mobile-nav-item" aria-label="Buscar">🔍</a>
-    <a href="messages.html" class="mobile-nav-item active" aria-label="Mensajes" aria-current="page">✉</a>
-    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil">👤</a>
+    <a href="home.html" class="mobile-nav-item" aria-label="Inicio"><i class="fa-solid fa-house"></i></a>
+    <a href="search.html" class="mobile-nav-item" aria-label="Buscar"><i class="fa-solid fa-magnifying-glass"></i></a>
+    <a href="messages.html" class="mobile-nav-item active" aria-label="Mensajes" aria-current="page"><i class="fa-solid fa-envelope"></i></a>
+    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil"><i class="fa-solid fa-user"></i></a>
   </nav>
 
   <script src="js/config.js"></script>

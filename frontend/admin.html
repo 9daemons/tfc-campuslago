@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="icon" href="assets/icon.ico">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <script src="js/theme.js"></script>
 </head>
 <body class="app-body">
@@ -22,7 +23,7 @@
     </div>
     <div class="nav-center"></div>
     <div class="nav-right">
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
       <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
         <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
@@ -32,7 +33,7 @@
   <main class="admin-main" id="main-content">
     <div class="admin-page-header">
       <h1>Panel de administración</h1>
-      <a href="home.html" class="btn-secondary btn-sm">← Volver al inicio</a>
+      <a href="home.html" class="btn-secondary btn-sm"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
     </div>
 
     <div class="admin-grid">
@@ -70,7 +71,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="modal-pin-title">PIN de recuperación</h3>
-        <button type="button" class="modal-close" id="btn-close-pin" aria-label="Cerrar">✕</button>
+        <button type="button" class="modal-close" id="btn-close-pin" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="pin-display">
         <p id="pin-user-info" class="pin-user-info"></p>
