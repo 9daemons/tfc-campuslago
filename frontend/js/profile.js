@@ -25,8 +25,9 @@ async function loadProfile() {
     document.getElementById('stat-following').textContent = data.following;
     document.getElementById('profile-bio').textContent = data.bio || '';
 
+    const roleLabel = { student: 'Alumno', teacher: 'Profesor', admin: 'Admin' };
     const badge = document.getElementById('profile-role');
-    badge.textContent = data.role;
+    badge.textContent = roleLabel[data.role] || data.role;
     badge.className = `role-badge ${data.role}`;
 
     const actions = document.getElementById('profile-actions');
