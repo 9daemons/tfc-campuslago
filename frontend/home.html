@@ -23,9 +23,8 @@
       <input type="search" id="nav-search" placeholder="Buscar..." class="nav-search-input" aria-label="Buscar usuarios o publicaciones">
     </div>
     <div class="nav-right">
-      <a href="messages.html" class="nav-icon" title="Mensajes" aria-label="Mensajes">✉</a>
+      <a href="messages.html" class="nav-icon" id="nav-messages" title="Mensajes" aria-label="Mensajes">✉</a>
       <button type="button" class="nav-icon" id="btn-notif" title="Notificaciones" aria-label="Notificaciones">🔔<span class="notif-badge hidden" id="notif-count">0</span></button>
-      <a href="admin.html" class="nav-icon hidden" id="btn-admin" title="Administración" aria-label="Panel de administración">⚙</a>
       <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
       <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
         <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
@@ -48,11 +47,11 @@
   <!-- Main layout -->
   <main class="app-main">
 
-    <aside class="sidebar-left" aria-label="Mensajes recientes">
+    <aside class="sidebar-left" aria-label="Panel lateral">
       <div class="sidebar-section">
-        <h2>Mensajes recientes</h2>
-        <div id="recent-messages"></div>
-        <a href="messages.html" class="sidebar-link">Ver todos</a>
+        <h2 id="sidebar-left-title">Mensajes recientes</h2>
+        <div id="sidebar-left-body"></div>
+        <a href="messages.html" class="sidebar-link" id="sidebar-messages-link">Ver todos</a>
       </div>
     </aside>
 
