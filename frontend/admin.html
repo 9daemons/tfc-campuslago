@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración - Campus Lago</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+</head>
+<body class="app-body">
+
+  <nav class="navbar" aria-label="Navegación principal">
+    <div class="nav-left">
+      <a href="home.html" class="nav-brand">Campus Lago</a>
+    </div>
+    <div class="nav-right">
+      <a href="admin.html" class="nav-icon" title="Administración" aria-label="Panel de administración">⚙</a>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
+      </a>
+    </div>
+  </nav>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1>Panel de administración</h1>
+    </div>
+
+    <section class="admin-section">
+      <h2>Solicitudes de registro pendientes</h2>
+      <div id="requests-list"><div class="loading">Cargando...</div></div>
+    </section>
+
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

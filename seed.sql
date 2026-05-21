@@ -87,6 +87,21 @@ INSERT INTO posts (user_id, content, post_type, is_anonymous) VALUES
 (@rafael, 'Los ejercicios de repaso del tema 4 están disponibles en el aula virtual. Se recomienda hacerlos antes del jueves.', 'official', 1),
 (@pilar,  'La tutoría de esta tarde queda aplazada al lunes de la semana que viene. Disculpad las molestias.', 'official', 0);
 
+-- Posts adicionales para mayor variedad en el feed
+INSERT INTO posts (user_id, content, post_type) VALUES
+(@david,   'test', 'student'),
+(@lucia,   'test', 'student'),
+(@javier,  'test', 'student'),
+(@andrea,  'test', 'student'),
+(@miguel,  'test', 'student'),
+(@sara,    'test', 'student'),
+(@pablo,   'test', 'student'),
+(@maria,   'test', 'student'),
+(@elena,   'test', 'student'),
+(@carlos,  'test', 'student'),
+(@laura,   'test', 'student'),
+(@alex,    'test', 'student');
+
 -- ============================================================
 -- VARIABLES DE POSTS (para likes y comentarios)
 -- ============================================================

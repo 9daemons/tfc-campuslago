@@ -6,6 +6,7 @@ let activeCommentPostId = null;
 if (user) {
   document.getElementById('nav-avatar-img').src = avatarUrl(user.avatar);
   document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
+  if (user.role === 'admin') document.getElementById('btn-admin').classList.remove('hidden');
 }
 
 Promise.all([loadUnifiedFeed(), loadRecentMessages(), loadNotifications(), loadSuggestedUsers()]);
@@ -35,7 +36,7 @@ async function loadUnifiedFeed() {
 
 function renderPost(p) {
   const isOfficial = p._type === 'official';
-  const isOwn = !isOfficial && (p.user_id == user.id || user.role === 'admin');
+  const isOwn = user.role === 'admin' || (!isOfficial && p.user_id == user.id);
   const nameClass = (!isOfficial && p.role === 'teacher') ? 'post-author-teacher' : '';
   const name = isOfficial
     ? (p.is_anonymous ? 'IES El Lago' : escapeHtml(p.full_name || p.username))

@@ -435,6 +435,20 @@ textarea { resize: vertical; }
 
 /* ── ADMIN ────────────────────────────────────── */
 
+.admin-main { max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+.admin-header { margin-bottom: 1.5rem; }
+.admin-header h1 { font-size: 1.5rem; }
+.admin-section { background: var(--card-bg); border-radius: 12px; padding: 1.2rem; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+.admin-section h2 { font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+
+.admin-request-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.admin-request-card:last-child { border-bottom: none; }
+.admin-request-info { display: flex; flex-direction: column; gap: .15rem; }
+.admin-request-info strong { font-size: .95rem; }
+.admin-request-info span, .admin-request-info small { font-size: .8rem; color: var(--text-muted); }
+.admin-request-actions { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+.admin-role-select { padding: .3rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: .85rem; cursor: pointer; }
+
 .admin-requests { background: var(--card-bg); border-radius: 12px; padding: 1rem; border: 1px solid var(--border); margin-bottom: 1rem; }
 .admin-request-item { padding: .7rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .8rem; }
 .admin-request-item:last-child { border-bottom: none; }
