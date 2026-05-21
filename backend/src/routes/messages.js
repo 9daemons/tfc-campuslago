@@ -3,7 +3,12 @@ const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
 
-router.get('/conversations', verifyToken, async (req, res) => {
+router.use(verifyToken, (req, res, next) => {
+  if (req.user.role === 'admin') return res.status(403).json({ error: 'Sin acceso.' });
+  next();
+});
+
+router.get('/conversations', async (req, res) => {
   try {
     const [rows] = await db.execute(`
       SELECT c.id, c.is_group, c.name,
@@ -23,7 +28,7 @@ router.get('/conversations', verifyToken, async (req, res) => {
   }
 });
 
-router.get('/conversations/:id', verifyToken, async (req, res) => {
+router.get('/conversations/:id', async (req, res) => {
   try {
     const [member] = await db.execute(
       'SELECT 1 FROM conversation_members WHERE conversation_id = ? AND user_id = ?',
@@ -50,7 +55,7 @@ router.get('/conversations/:id', verifyToken, async (req, res) => {
   }
 });
 
-router.post('/conversations', verifyToken, async (req, res) => {
+router.post('/conversations', async (req, res) => {
   const { user_ids, name, is_group } = req.body;
   if (!user_ids || !Array.isArray(user_ids) || user_ids.length === 0)
     return res.status(400).json({ error: 'Se requieren destinatarios.' });
@@ -97,7 +102,7 @@ router.post('/conversations', verifyToken, async (req, res) => {
   }
 });
 
-router.post('/conversations/:id/messages', verifyToken, async (req, res) => {
+router.post('/conversations/:id/messages', async (req, res) => {
   const { content } = req.body;
   if (!content) return res.status(400).json({ error: 'Mensaje vacío.' });
 
