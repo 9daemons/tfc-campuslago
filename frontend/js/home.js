@@ -8,6 +8,12 @@ if (user) {
   document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
   if (user.role === 'admin') {
     document.getElementById('nav-messages').classList.add('hidden');
+    const mobileMsg = document.getElementById('mobile-nav-messages');
+    if (mobileMsg) {
+      mobileMsg.href = 'admin.html';
+      mobileMsg.setAttribute('aria-label', 'Administración');
+      mobileMsg.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+    }
   }
   const sidebarCard = document.getElementById('sidebar-user-card');
   if (sidebarCard) {
