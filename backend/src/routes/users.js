@@ -11,6 +11,7 @@ router.get('/me/suggested', verifyToken, async (req, res) => {
       FROM users
       WHERE id != ?
         AND is_active = TRUE
+        AND role != 'admin'
         AND id NOT IN (SELECT following_id FROM follows WHERE follower_id = ?)
       ORDER BY RAND()
       LIMIT 8
@@ -28,6 +29,8 @@ router.get('/:username', verifyToken, async (req, res) => {
       [req.params.username]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
+    if (rows[0].role === 'admin' && req.user.role !== 'admin')
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
 
     const user = rows[0];
     const [[{ c: followers }]] = await db.execute('SELECT COUNT(*) AS c FROM follows WHERE following_id = ?', [user.id]);
@@ -88,6 +91,9 @@ router.put('/me/profile', verifyToken, upload.single('avatar'), async (req, res)
 router.post('/:id/follow', verifyToken, async (req, res) => {
   if (req.params.id == req.user.id)
     return res.status(400).json({ error: 'No puedes seguirte a ti mismo.' });
+  const [target] = await db.execute('SELECT role FROM users WHERE id = ?', [req.params.id]);
+  if (target.length && target[0].role === 'admin')
+    return res.status(400).json({ error: 'No puedes seguir esta cuenta.' });
   try {
     const [existing] = await db.execute(
       'SELECT 1 FROM follows WHERE follower_id = ? AND following_id = ?',

@@ -10,7 +10,7 @@ router.get('/', verifyToken, async (req, res) => {
   const like = `%${q}%`;
   try {
     const [users] = await db.execute(
-      'SELECT id, username, full_name, avatar, role FROM users WHERE username LIKE ? OR full_name LIKE ? LIMIT 10',
+      "SELECT id, username, full_name, avatar, role FROM users WHERE (username LIKE ? OR full_name LIKE ?) AND role != 'admin' LIMIT 10",
       [like, like]
     );
     const [posts] = await db.execute(`
