@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
-const { sendPinEmail } = require('../services/mailer');
 
 router.get('/me/suggested', verifyToken, async (req, res) => {
   try {
@@ -237,8 +236,6 @@ router.post('/admin/users/:id/reset-pin', verifyToken, requireRole('admin'), asy
 
     await db.execute('DELETE FROM password_resets WHERE user_id = ?', [user.id]);
     await db.execute('INSERT INTO password_resets (user_id, pin, expires_at) VALUES (?, ?, ?)', [user.id, pin, expires]);
-
-    sendPinEmail(user.email, user.full_name, pin).catch(err => console.error('Email error:', err.message));
 
     res.json({ pin, email: user.email, full_name: user.full_name });
   } catch (e) {
