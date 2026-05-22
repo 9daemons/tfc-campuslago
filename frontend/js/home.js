@@ -125,7 +125,6 @@ function attachPostActions(containerId) {
   });
 }
 
-// Modal nuevo post
 document.getElementById('btn-new-post').addEventListener('click', () => {
   document.getElementById('modal-post').classList.remove('hidden');
 });
@@ -180,7 +179,6 @@ document.getElementById('form-post').addEventListener('submit', async (e) => {
   }
 });
 
-// Comentarios
 async function openComments(postId) {
   activeCommentPostId = postId;
   const list = document.getElementById('comments-list');
@@ -222,7 +220,6 @@ document.getElementById('form-comment').addEventListener('submit', async (e) => 
   } catch (e) { alert(e.message); }
 });
 
-// Notificaciones
 async function loadNotifications() {
   try {
     const notifs = await apiFetch('/notifications');
@@ -248,7 +245,6 @@ document.getElementById('btn-mark-read').addEventListener('click', async () => {
   } catch {}
 });
 
-// Mensajes recientes
 async function loadRecentMessages() {
   const container = document.getElementById('sidebar-left-body');
   try {
@@ -271,7 +267,6 @@ async function loadRecentMessages() {
   } catch {}
 }
 
-// Solicitudes de registro (solo admin)
 async function loadAdminRequests() {
   document.getElementById('sidebar-left-title').textContent = 'Solicitudes de registro';
   document.getElementById('sidebar-messages-link').classList.add('hidden');
@@ -328,7 +323,6 @@ async function loadAdminRequests() {
   }
 }
 
-// Estadísticas para admin
 async function loadAdminStats() {
   const container = document.getElementById('suggested-users');
   const title = document.querySelector('.sidebar-right h2');
@@ -354,7 +348,6 @@ async function loadAdminStats() {
   }
 }
 
-// Sugerencias de usuarios
 async function loadSuggestedUsers() {
   const container = document.getElementById('suggested-users');
   if (!container) return;
@@ -400,7 +393,6 @@ async function loadSuggestedUsers() {
   }
 }
 
-// Búsqueda
 const navSearch = document.getElementById('nav-search');
 const searchResultsEl = document.getElementById('search-results');
 let searchTimeout;

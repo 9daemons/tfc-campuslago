@@ -61,7 +61,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
     return res.status(400).json({ error: 'El post necesita contenido o imagen.' });
 
   try {
-    // el admin siempre publica como noticia oficial
+    // admin posts are always official news
     const type = req.user.role === 'admin' ? 'official' : 'student';
     const anon = 0;
 

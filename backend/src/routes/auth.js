@@ -6,7 +6,6 @@ const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
 const ValidationService = require('../services/ValidationService');
 
-// registro - la solicitud va a pendiente hasta que admin la apruebe
 router.post('/register', async (req, res) => {
   const { email, username, full_name, password } = req.body;
 
@@ -125,7 +124,7 @@ router.post('/reset-password', async (req, res) => {
 
     const hash = await bcrypt.hash(new_password, 10);
 
-    // transacción para que ambas actualizaciones sean atómicas
+    // atomic: update password and mark pin as used
     const conn = await db.getConnection();
     await conn.beginTransaction();
     try {

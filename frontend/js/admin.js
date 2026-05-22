@@ -1,16 +1,10 @@
-const user = requireAuth();
-if (user.role !== 'admin') window.location.href = 'home.html';
+requireAuth();
+
+const user = getUser();
+if (!user || user.role !== 'admin') window.location.href = 'home.html';
 
 const navAvatar = document.getElementById('nav-avatar-img');
-const navAvatarLink = document.getElementById('nav-avatar-link');
 if (navAvatar) navAvatar.src = avatarUrl(user.avatar);
-if (navAvatarLink) navAvatarLink.href = 'profile.html';
-
-document.getElementById('btn-theme').addEventListener('click', () => {
-  document.documentElement.classList.toggle('dark');
-  localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-  document.getElementById('btn-theme').textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
-});
 
 document.getElementById('btn-close-pin').addEventListener('click', () => {
   document.getElementById('modal-pin').classList.add('hidden');
@@ -136,7 +130,7 @@ function renderUsers(users) {
         <button class="btn-sm ${u.is_active ? 'btn-warning' : 'btn-success'}" onclick="toggleSuspend(${u.id})" aria-label="${u.is_active ? 'Suspender' : 'Activar'} cuenta de ${escapeHtml(u.full_name || u.username)}">
           ${u.is_active ? 'Suspender' : 'Activar'}
         </button>
-        <button class="btn-sm btn-secondary" onclick="resetPin(${u.id})" aria-label="Generar PIN de recuperación para ${escapeHtml(u.full_name || u.username)}">Reset PIN</button>
+        <button class="btn-sm btn-secondary" onclick="resetPin(${u.id})" aria-label="Generar PIN para ${escapeHtml(u.full_name || u.username)}">Reset PIN</button>
         <button class="btn-sm btn-danger" onclick="deleteUser(${u.id}, '${escapeHtml(u.full_name || u.username).replace(/'/g, "\\'")}')" aria-label="Eliminar cuenta de ${escapeHtml(u.full_name || u.username)}">Eliminar</button>
       </div>
     </div>
@@ -183,7 +177,6 @@ async function toggleSuspend(id) {
     if (btn) {
       btn.textContent = is_active ? 'Suspender' : 'Activar';
       btn.className = `btn-sm ${is_active ? 'btn-warning' : 'btn-success'}`;
-      btn.setAttribute('aria-label', `${is_active ? 'Suspender' : 'Activar'} cuenta`);
     }
   } catch {
     alert('Error al cambiar el estado de la cuenta.');

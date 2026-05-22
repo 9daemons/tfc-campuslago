@@ -113,7 +113,6 @@ async function sendMessage() {
   } catch (e) { alert(e.message); }
 }
 
-// New conversation modal
 document.getElementById('btn-new-conv').addEventListener('click', () => {
   selectedUsers = [];
   document.getElementById('modal-new-conv').classList.remove('hidden');
