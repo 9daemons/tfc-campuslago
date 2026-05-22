@@ -101,12 +101,19 @@ async function loadUserPosts() {
     container.innerHTML = posts.length
       ? posts.map(p => `
         <article class="post-card" style="margin-bottom:.8rem" data-id="${p.id}">
-          ${canDelete ? `<div class="post-header-menu" style="display:flex;justify-content:flex-end;margin-bottom:.3rem">
-            <button type="button" class="btn-post-menu" data-id="${p.id}">⋯</button>
-            <div class="post-menu-dropdown hidden">
-              <button type="button" class="btn-delete-post" data-id="${p.id}">Eliminar post</button>
+          <div class="post-header">
+            <img src="${avatarUrl(p.avatar)}" alt="Avatar de ${escapeHtml(p.full_name || p.username)}">
+            <div class="post-header-info">
+              <strong>${escapeHtml(p.full_name || p.username)}</strong>
+              <small>${timeAgo(p.created_at)}</small>
             </div>
-          </div>` : ''}
+            ${canDelete ? `<div class="post-header-menu">
+              <button type="button" class="btn-post-menu" data-id="${p.id}">⋯</button>
+              <div class="post-menu-dropdown hidden">
+                <button type="button" class="btn-delete-post" data-id="${p.id}">Eliminar post</button>
+              </div>
+            </div>` : ''}
+          </div>
           ${p.content ? `<p class="post-content">${escapeHtml(p.content)}</p>` : ''}
           ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="Imagen del post">` : ''}
           <div class="post-actions">

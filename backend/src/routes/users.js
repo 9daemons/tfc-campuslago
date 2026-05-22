@@ -53,9 +53,11 @@ router.get('/:username/posts', verifyToken, async (req, res) => {
 
     const [rows] = await db.execute(`
       SELECT p.id, p.content, p.image_url, p.post_type, p.created_at,
+        u.username, u.full_name, u.avatar,
         COUNT(DISTINCT l.user_id) AS likes_count,
         COUNT(DISTINCT c.id) AS comments_count
       FROM posts p
+      JOIN users u ON u.id = p.user_id
       LEFT JOIN likes l ON l.post_id = p.id
       LEFT JOIN comments c ON c.post_id = p.id
       WHERE p.user_id = ?
