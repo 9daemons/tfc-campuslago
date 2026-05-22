@@ -49,7 +49,7 @@ async function performSearch(q) {
     const postsEl = document.getElementById('posts-results');
     if (data.posts.length) {
       postsEl.innerHTML = data.posts.map(p => `
-        <div class="post-card" style="margin-bottom:.5rem">
+        <div class="post-card" style="margin-bottom:.5rem;cursor:pointer" onclick="window.location.href='home.html?post=${p.id}'">
           <div class="post-header">
             <img src="${avatarUrl(p.avatar)}" alt="Avatar de ${escapeHtml(p.username)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
             <div class="post-header-info">
