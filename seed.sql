@@ -2,9 +2,7 @@ SET NAMES utf8mb4;
 SET CHARACTER SET utf8mb4;
 USE campus_lago;
 
--- ============================================================
--- USUARIOS  (contraseña en todos: password)
--- ============================================================
+-- usuarios de prueba (pass: password)
 INSERT IGNORE INTO users (email, username, password_hash, full_name, role) VALUES
 ('laura.garcia@educa.madrid.org',       'lauragarcia',     '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Laura García',        'student'),
 ('carlos.martin@educa.madrid.org',      'carlosmartin',    '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Carlos Martín',       'student'),
@@ -22,9 +20,7 @@ INSERT IGNORE INTO users (email, username, password_hash, full_name, role) VALUE
 ('rafael.munoz@educa.madrid.org',       'rafaelmunoz',     '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Rafael Muñoz',        'teacher'),
 ('pilar.castro@educa.madrid.org',       'pilarcastro',     '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Pilar Castro',        'teacher');
 
--- ============================================================
--- VARIABLES
--- ============================================================
+-- ids
 SET @admin  = (SELECT id FROM users WHERE email = 'admin@educa.madrid.org');
 SET @laura  = (SELECT id FROM users WHERE email = 'laura.garcia@educa.madrid.org');
 SET @carlos = (SELECT id FROM users WHERE email = 'carlos.martin@educa.madrid.org');
@@ -42,9 +38,7 @@ SET @andrea = (SELECT id FROM users WHERE email = 'andrea.jimenez@educa.madrid.o
 SET @rafael = (SELECT id FROM users WHERE email = 'rafael.munoz@educa.madrid.org');
 SET @pilar  = (SELECT id FROM users WHERE email = 'pilar.castro@educa.madrid.org');
 
--- ============================================================
--- BIOS
--- ============================================================
+-- bios
 UPDATE users SET bio = 'Alumna de 2º DAW. Amante del frontend y del café con leche.' WHERE id = @laura;
 UPDATE users SET bio = 'Estudiante de DAW. Fanático del backend y los videojuegos.' WHERE id = @carlos;
 UPDATE users SET bio = 'Profesora de Bases de Datos y Programación. Consultas por mensajes.' WHERE id = @ana;
@@ -61,9 +55,7 @@ UPDATE users SET bio = 'Alumna de 1º DAW. Vengo del mundo del diseño gráfico.
 UPDATE users SET bio = 'Profesor de Matemáticas y Estadística. Aquí resuelvo dudas.' WHERE id = @rafael;
 UPDATE users SET bio = 'Profesora de Lengua y Literatura. Tutora de 2º DAW.' WHERE id = @pilar;
 
--- ============================================================
--- POSTS
--- ============================================================
+-- posts
 INSERT INTO posts (user_id, content, post_type) VALUES
 (@laura,  'Hola', 'student'),
 (@laura,  'Mensaje de prueba', 'student'),
@@ -93,7 +85,7 @@ INSERT INTO posts (user_id, content, post_type) VALUES
 (@rafael, 'Mensaje de prueba', 'student'),
 (@pilar,  '¿Qué tal?', 'student');
 
--- Posts adicionales para mayor variedad en el feed
+-- posts extra
 INSERT INTO posts (user_id, content, post_type) VALUES
 (@david,   'Hola', 'student'),
 (@lucia,   '¿Qué tal?', 'student'),
@@ -108,9 +100,7 @@ INSERT INTO posts (user_id, content, post_type) VALUES
 (@laura,   'Test', 'student'),
 (@alex,    '¿Qué tal?', 'student');
 
--- ============================================================
--- VARIABLES DE POSTS (para likes y comentarios)
--- ============================================================
+-- ids de posts para likes y comentarios
 SET @p_laura1  = (SELECT id FROM posts WHERE user_id = @laura  ORDER BY id ASC LIMIT 1);
 SET @p_laura2  = (SELECT id FROM posts WHERE user_id = @laura  ORDER BY id ASC LIMIT 1 OFFSET 1);
 SET @p_carlos1 = (SELECT id FROM posts WHERE user_id = @carlos ORDER BY id ASC LIMIT 1);
@@ -124,9 +114,7 @@ SET @p_javier1 = (SELECT id FROM posts WHERE user_id = @javier ORDER BY id ASC L
 SET @p_andrea1 = (SELECT id FROM posts WHERE user_id = @andrea ORDER BY id ASC LIMIT 1);
 SET @p_ana1    = (SELECT id FROM posts WHERE user_id = @ana    ORDER BY id ASC LIMIT 1);
 
--- ============================================================
--- LIKES
--- ============================================================
+-- likes
 INSERT IGNORE INTO likes (user_id, post_id) VALUES
 (@carlos, @p_laura1), (@alex,  @p_laura1), (@elena, @p_laura1), (@miguel, @p_laura1),
 (@laura,  @p_carlos1),(@elena, @p_carlos1),
@@ -140,33 +128,27 @@ INSERT IGNORE INTO likes (user_id, post_id) VALUES
 (@elena,  @p_andrea1),(@laura, @p_andrea1),(@maria,  @p_andrea1),(@lucia, @p_andrea1),
 (@laura,  @p_ana1),   (@carlos,@p_ana1),   (@elena,  @p_ana1);
 
--- ============================================================
--- COMENTARIOS
--- ============================================================
+-- comentarios
 INSERT INTO comments (post_id, user_id, content) VALUES
-(@p_laura1,  @carlos, 'Yo tampoco lo entendí, igual luego le pregunto a Pilar en tutoría.'),
-(@p_laura1,  @alex,   'Yo tuve el mismo problema la semana pasada. Al final era un error de signo.'),
-(@p_carlos1, @laura,  'Suerte! Yo estoy igual con el mío pero para el viernes.'),
-(@p_alex1,   @miguel, 'El de Redes del año pasado no fue para tanto, tranquilo.'),
-(@p_alex1,   @javier, 'Si quieres te paso unos apuntes del año pasado, me escribes.'),
-(@p_pablo1,  @carlos, 'Esto es exactamente yo. Ánimo compañero.'),
-(@p_sara1,   @laura,  'Bienvenida! Si necesitas ayuda con algo no dudes en preguntar.'),
-(@p_sara1,   @elena,  'El primer mes es el más difícil, luego ya le pillas el ritmo. Bienvenida!'),
-(@p_miguel1, @javier, 'Clásico. A mí me pasó igual con el LVM la semana pasada.'),
-(@p_elena1,  @andrea, 'Las variables CSS son lo mejor que existe. Cambia la vida.'),
-(@p_andrea1, @elena,  'Yo uso nombres tipo --color-primary, --color-accent... al principio no sabes pero luego se agradece.'),
-(@p_lucia1,  @elena,  'Me apunto al grupo de estudio! Te escribo por mensajes.');
+(@p_laura1,  @carlos, 'jajaja igual'),
+(@p_laura1,  @alex,   'a mí me pasó lo mismo'),
+(@p_carlos1, @laura,  'suerte!! yo igual para el viernes'),
+(@p_alex1,   @miguel, 'tranquilo que no era para tanto'),
+(@p_alex1,   @javier, 'si quieres te paso apuntes'),
+(@p_pablo1,  @carlos, 'esto soy yo exactamente'),
+(@p_sara1,   @laura,  'bienvenida! cualquier duda me dices'),
+(@p_sara1,   @elena,  'el primer mes cuesta pero luego va bien'),
+(@p_miguel1, @javier, 'clásico, a mí igual la semana pasada'),
+(@p_elena1,  @andrea, 'las variables css son lo mejor'),
+(@p_andrea1, @elena,  'yo uso --color-primary, --color-accent etc'),
+(@p_lucia1,  @elena,  'me apunto! te escribo por mensajes');
 
--- ============================================================
--- FOLLOWS (los nuevos usuarios se siguen entre sí;
---           laura/carlos/admin NO siguen a los nuevos
---           → aparecen en Explorar cuando entras con esas cuentas)
--- ============================================================
+-- follows
 INSERT IGNORE INTO follows (follower_id, following_id) VALUES
--- laura y carlos se siguen mutuamente; siguen a la profe Ana
+-- laura y carlos se siguen, siguen a ana
 (@laura,  @carlos), (@carlos, @laura),
 (@laura,  @ana),    (@carlos, @ana),
--- red entre los nuevos alumnos
+-- resto de alumnos
 (@alex,   @miguel), (@alex,   @pablo),  (@alex,   @maria),
 (@maria,  @elena),  (@maria,  @laura),  (@maria,  @alex),
 (@pablo,  @carlos), (@pablo,  @elena),
@@ -178,11 +160,7 @@ INSERT IGNORE INTO follows (follower_id, following_id) VALUES
 (@javier, @miguel), (@javier, @alex),
 (@andrea, @elena),  (@andrea, @laura);
 
--- ============================================================
--- CONVERSACIONES Y MENSAJES
--- ============================================================
-
--- Laura ↔ Admin
+-- conversaciones
 INSERT INTO conversations (is_group, name, created_by) VALUES (0, NULL, @laura);
 SET @conv1 = LAST_INSERT_ID();
 INSERT INTO conversation_members (conversation_id, user_id) VALUES (@conv1, @laura), (@conv1, @admin);
@@ -191,7 +169,6 @@ INSERT INTO messages (conversation_id, sender_id, content) VALUES
 (@conv1, @admin, 'Claro, dime qué necesitas.'),
 (@conv1, @laura, 'Solo quería saber si es normal que no pueda editar mi post de ayer.');
 
--- Carlos ↔ Admin
 INSERT INTO conversations (is_group, name, created_by) VALUES (0, NULL, @carlos);
 SET @conv2 = LAST_INSERT_ID();
 INSERT INTO conversation_members (conversation_id, user_id) VALUES (@conv2, @carlos), (@conv2, @admin);
@@ -200,7 +177,6 @@ INSERT INTO messages (conversation_id, sender_id, content) VALUES
 (@conv2, @admin,  'Ya lo revisé, era un problema temporal. ¿Ahora funciona bien?'),
 (@conv2, @carlos, 'Sí, ya va perfecto. Gracias.');
 
--- Elena ↔ Laura
 INSERT INTO conversations (is_group, name, created_by) VALUES (0, NULL, @elena);
 SET @conv3 = LAST_INSERT_ID();
 INSERT INTO conversation_members (conversation_id, user_id) VALUES (@conv3, @elena), (@conv3, @laura);
@@ -209,7 +185,6 @@ INSERT INTO messages (conversation_id, sender_id, content) VALUES
 (@conv3, @laura, 'Sí, a las 17:30 en el aula de informática ¿no?'),
 (@conv3, @elena, 'Exacto. Trae el avance que tengas aunque sea poco.');
 
--- Alex ↔ Pablo
 INSERT INTO conversations (is_group, name, created_by) VALUES (0, NULL, @alex);
 SET @conv4 = LAST_INSERT_ID();
 INSERT INTO conversation_members (conversation_id, user_id) VALUES (@conv4, @alex), (@conv4, @pablo);
@@ -219,7 +194,7 @@ INSERT INTO messages (conversation_id, sender_id, content) VALUES
 (@conv4, @alex,  'Sí, primer año. Oye, ¿qué tal se lleva lo de trabajar y estudiar a la vez?'),
 (@conv4, @pablo, 'Duro pero se puede. El truco es ir al día, si te atragas con los apuntes ya no hay quien lo saque.');
 
--- Grupo de clase (Ana, Laura, Carlos, Elena)
+-- grupo de clase
 INSERT INTO conversations (is_group, name, created_by) VALUES (1, 'DAW 2º - General', @ana);
 SET @conv5 = LAST_INSERT_ID();
 INSERT INTO conversation_members (conversation_id, user_id) VALUES
@@ -231,9 +206,7 @@ INSERT INTO messages (conversation_id, sender_id, content) VALUES
 (@conv5, @ana,    'Digital está bien, en PDF.'),
 (@conv5, @elena,  'Perfecto, yo ya lo tengo casi listo.');
 
--- ============================================================
--- NOTIFICACIONES (para admin)
--- ============================================================
+-- notificaciones de prueba
 INSERT INTO notifications (user_id, type, message, reference_id) VALUES
 (@admin, 'like',    'Laura García ha dado me gusta a una publicación.', @p_laura1),
 (@admin, 'comment', 'Carlos Martín ha comentado una publicación.',      @p_laura1),
