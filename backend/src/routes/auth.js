@@ -5,6 +5,7 @@ const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
 const ValidationService = require('../services/ValidationService');
+const { sendPinEmail } = require('../services/mailer');
 
 router.post('/register', async (req, res) => {
   const { email, username, full_name, password } = req.body;
@@ -94,8 +95,12 @@ router.post('/forgot-password', async (req, res) => {
       [rows[0].id, pin, expires]
     );
 
-    // TODO: enviar por email con nodemailer
-    console.log(`PIN para ${email}: ${pin}`);
+    const [[u]] = await db.execute('SELECT full_name FROM users WHERE id = ?', [rows[0].id]);
+    try {
+      await sendPinEmail(email, u?.full_name, pin);
+    } catch (mailErr) {
+      console.error('Email error:', mailErr.message);
+    }
 
     res.json({ message: 'Si el email existe, recibirás un PIN.' });
   } catch (e) {
