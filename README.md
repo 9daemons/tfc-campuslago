@@ -8,7 +8,7 @@ Una plataforma privada donde alumnos y profesores del centro pueden publicar con
 
 ## Stack
 
-- **Frontend:** HTML, CSS y JavaScript vanilla — sin frameworks
+- **Frontend:** HTML, CSS y JavaScript
 - **Backend:** Node.js + Express
 - **Base de datos:** MySQL 8
 - **Auth:** JWT + bcryptjs
@@ -16,8 +16,6 @@ Una plataforma privada donde alumnos y profesores del centro pueden publicar con
 - **Despliegue:** Netlify (frontend) · Render (backend) · Clever Cloud (MySQL)
 
 ## Levantar en local
-
-La forma más rápida es con Docker:
 
 ```bash
 docker-compose up --build
@@ -28,19 +26,6 @@ docker-compose up --build
 
 La base de datos se inicializa sola con el esquema y datos de prueba (15 usuarios, contraseña `password` para todos).
 
-Sin Docker:
-
-```bash
-# 1. Inicializar la base de datos
-mysql -u root -p < backend/src/db/schema.sql
-mysql -u root -p campus_lago < seed.sql
-
-# 2. Arrancar el backend
-cd backend
-cp .env.example .env   # rellenar con los datos de la BD local
-npm install
-npm run dev
-```
 
 ## Variables de entorno
 
