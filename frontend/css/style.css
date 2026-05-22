@@ -76,11 +76,13 @@ a { color: inherit; text-decoration: none; }
 .tab-btn {
   flex: 1; padding: .8rem; border: 2px solid var(--border); background: none;
   border-radius: 8px; cursor: pointer; font-size: .95rem; transition: all .2s;
-  min-height: 48px;
+  min-height: 48px; color: var(--text);
 }
+.tab-btn:not(.active):hover { color: var(--primary); border-color: var(--primary); }
 .tab-btn.active {
   background: var(--primary); color: #fff; border-color: var(--primary);
 }
+.dark .tab-btn:not(.active) { color: #fff; }
 
 .auth-panel { display: none; }
 .auth-panel.active { display: block; }
