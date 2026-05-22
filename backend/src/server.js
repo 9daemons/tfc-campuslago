@@ -12,6 +12,7 @@ const searchRoutes = require('./routes/search');
 const notificationsRoutes = require('./routes/notifications');
 
 const app = express();
+app.set('trust proxy', 1);
 
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500').split(',').map(o => o.trim());
 app.use(cors({
