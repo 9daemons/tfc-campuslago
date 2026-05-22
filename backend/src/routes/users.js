@@ -172,4 +172,76 @@ router.post('/admin/requests/:id/reject', verifyToken, requireRole('admin'), asy
   }
 });
 
+router.get('/admin/users', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT u.id, u.username, u.full_name, u.email, u.role, u.is_active, u.avatar,
+             u.created_at, u.last_login,
+             COUNT(DISTINCT p.id) AS posts_count,
+             COUNT(DISTINCT c.id) AS comments_count
+      FROM users u
+      LEFT JOIN posts p ON p.user_id = u.id
+      LEFT JOIN comments c ON c.user_id = u.id
+      WHERE u.role != 'admin'
+      GROUP BY u.id
+      ORDER BY u.full_name ASC
+    `);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
+router.put('/admin/users/:id/role', verifyToken, requireRole('admin'), async (req, res) => {
+  const { role } = req.body;
+  if (!['student', 'teacher'].includes(role))
+    return res.status(400).json({ error: 'Rol inválido.' });
+  try {
+    await db.execute("UPDATE users SET role = ? WHERE id = ? AND role != 'admin'", [role, req.params.id]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
+router.delete('/admin/users/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    await db.execute("DELETE FROM users WHERE id = ? AND role != 'admin'", [req.params.id]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
+router.put('/admin/users/:id/suspend', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    await db.execute("UPDATE users SET is_active = NOT is_active WHERE id = ? AND role != 'admin'", [req.params.id]);
+    const [[user]] = await db.execute('SELECT is_active FROM users WHERE id = ?', [req.params.id]);
+    res.json({ is_active: !!user.is_active });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
+router.post('/admin/users/:id/reset-pin', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const [[user]] = await db.execute(
+      "SELECT id, email, full_name FROM users WHERE id = ? AND role != 'admin'",
+      [req.params.id]
+    );
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 15 * 60 * 1000);
+
+    await db.execute('DELETE FROM password_resets WHERE user_id = ?', [user.id]);
+    await db.execute('INSERT INTO password_resets (user_id, pin, expires_at) VALUES (?, ?, ?)', [user.id, pin, expires]);
+
+    console.log(`[Admin reset] PIN para ${user.email}: ${pin}`);
+    res.json({ pin, email: user.email, full_name: user.full_name });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
 module.exports = router;

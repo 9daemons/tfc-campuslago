@@ -63,6 +63,8 @@ router.post('/login', async (req, res) => {
     if (!valid)
       return res.status(401).json({ error: 'Credenciales incorrectas.' });
 
+    await db.execute('UPDATE users SET last_login = NOW() WHERE id = ?', [user.id]);
+
     const token = jwt.sign(
       { id: user.id, email: user.email, username: user.username, role: user.role },
       process.env.JWT_SECRET,
