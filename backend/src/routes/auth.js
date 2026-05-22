@@ -5,7 +5,6 @@ const router = express.Router();
 const db = require('../db/connection');
 const { verifyToken } = require('../middleware/auth');
 const ValidationService = require('../services/ValidationService');
-const { sendPinEmail } = require('../services/mailer');
 
 router.post('/register', async (req, res) => {
   const { email, username, full_name, password } = req.body;
@@ -94,9 +93,6 @@ router.post('/forgot-password', async (req, res) => {
       'INSERT INTO password_resets (user_id, pin, expires_at) VALUES (?, ?, ?)',
       [rows[0].id, pin, expires]
     );
-
-    const [[u]] = await db.execute('SELECT full_name FROM users WHERE id = ?', [rows[0].id]);
-    sendPinEmail(email, u?.full_name, pin).catch(err => console.error('Email error:', err.message));
 
     res.json({ message: 'Si el email existe, recibirás un PIN.' });
   } catch (e) {
