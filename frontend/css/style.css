@@ -50,7 +50,9 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+  background:
+    linear-gradient(135deg, rgba(30,64,175,0.82) 0%, rgba(37,99,235,0.78) 50%, rgba(59,130,246,0.75) 100%),
+    url('../assets/logincampus.webp') center/cover no-repeat;
 }
 
 .auth-container {
