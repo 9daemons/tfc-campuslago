@@ -42,10 +42,6 @@ class ValidationService {
     return errors;
   }
 
-  isAllowedEmail(email) {
-    if (typeof email !== 'string') return false;
-    return email.toLowerCase().endsWith(this.domain);
-  }
 }
 
 module.exports = ValidationService;

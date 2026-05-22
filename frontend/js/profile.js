@@ -130,7 +130,6 @@ async function loadUserPosts() {
   }
 }
 
-// Edit profile modal
 document.getElementById('btn-close-edit')?.addEventListener('click', () => {
   document.getElementById('modal-edit').classList.add('hidden');
 });

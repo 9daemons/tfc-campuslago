@@ -1,9 +1,7 @@
-// Redirect if already logged in
 if (localStorage.getItem('token')) {
   window.location.href = 'home.html';
 }
 
-// Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -13,7 +11,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-// Login
 document.getElementById('form-login').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
@@ -52,7 +49,6 @@ document.getElementById('form-login').addEventListener('submit', async (e) => {
   }
 });
 
-// Register
 document.getElementById('form-register').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('reg-email').value.trim();
@@ -93,7 +89,6 @@ document.getElementById('form-register').addEventListener('submit', async (e) =>
   }
 });
 
-// Forgot password link
 document.getElementById('btn-forgot').addEventListener('click', () => {
   document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-forgot').classList.add('active');
@@ -106,7 +101,6 @@ document.getElementById('btn-back-login').addEventListener('click', () => {
   document.querySelector('[data-tab="login"]').classList.add('active');
 });
 
-// Forgot password
 let forgotEmail = '';
 document.getElementById('form-forgot').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -142,7 +136,6 @@ document.getElementById('form-forgot').addEventListener('submit', async (e) => {
   }
 });
 
-// Reset password
 document.getElementById('form-reset').addEventListener('submit', async (e) => {
   e.preventDefault();
   const pin = document.getElementById('reset-pin').value.trim();

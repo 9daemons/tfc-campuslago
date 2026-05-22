@@ -63,7 +63,7 @@ router.post('/conversations', async (req, res) => {
   try {
     const allMembers = [...new Set([req.user.id, ...user_ids.map(Number)])];
 
-    // si es un DM entre dos personas comprobar que no existe ya
+    // avoid duplicate DMs between two users
     if (!is_group && allMembers.length === 2) {
       const [existing] = await db.execute(`
         SELECT c.id FROM conversations c
@@ -74,7 +74,6 @@ router.post('/conversations', async (req, res) => {
       if (existing.length > 0) return res.json({ id: existing[0].id, existing: true });
     }
 
-    // transacción para crear la conversación y añadir miembros
     const conn = await db.getConnection();
     await conn.beginTransaction();
     try {
