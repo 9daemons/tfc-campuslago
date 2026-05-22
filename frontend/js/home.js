@@ -8,12 +8,6 @@ if (user) {
   document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
   if (user.role === 'admin') {
     document.getElementById('nav-messages').classList.add('hidden');
-    const adminLink = document.createElement('a');
-    adminLink.href = 'admin.html';
-    adminLink.className = 'btn-primary btn-sm';
-    adminLink.textContent = 'Panel admin';
-    adminLink.style.marginLeft = '.5rem';
-    document.querySelector('.feed-header')?.appendChild(adminLink);
   }
 }
 
@@ -326,7 +320,7 @@ async function loadAdminRequests() {
 async function loadAdminStats() {
   const container = document.getElementById('suggested-users');
   const title = document.querySelector('.sidebar-right h2');
-  if (title) title.textContent = 'Estadísticas';
+  if (title) title.innerHTML = '<a href="admin.html" class="sidebar-admin-link">Panel de administración</a>';
   if (!container) return;
   try {
     const s = await apiFetch('/users/admin/stats');
