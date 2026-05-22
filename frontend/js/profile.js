@@ -1,6 +1,14 @@
 if (!requireAuth()) throw new Error('Not auth');
 
 const user = getUser();
+
+function onlineDot(lastLogin) {
+  if (!lastLogin) return '';
+  const diff = Date.now() - new Date(lastLogin).getTime();
+  if (diff < 3600000)  return '<span class="online-dot green" title="En línea"></span>';
+  if (diff < 86400000) return '<span class="online-dot orange" title="Activo hoy"></span>';
+  return '';
+}
 const urlParams = new URLSearchParams(window.location.search);
 const targetUsername = urlParams.get('u') || user?.username;
 const isOwnProfile = targetUsername === user?.username;
@@ -19,6 +27,12 @@ async function loadProfile() {
     const data = await apiFetch(`/users/${targetUsername}`);
 
     document.getElementById('profile-avatar').src = avatarUrl(data.avatar);
+    const wrap = document.getElementById('profile-avatar-wrap');
+    const existingDot = wrap?.querySelector('.online-dot');
+    if (existingDot) existingDot.remove();
+    const dotHtml = onlineDot(data.last_login);
+    if (dotHtml && wrap) wrap.insertAdjacentHTML('beforeend', dotHtml);
+
     document.getElementById('profile-name').textContent = data.full_name || data.username;
     document.title = `${data.full_name || data.username} - Campus Lago`;
     document.getElementById('profile-username').textContent = `@${data.username}`;
@@ -101,7 +115,13 @@ async function loadUserPosts() {
             <small style="margin-left:auto;color:var(--text-muted)">${timeAgo(p.created_at)}</small>
           </div>
         </article>`).join('')
-      : '<p class="loading">Sin posts aún.</p>';
+      : `<div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+          <p>${isOwnProfile ? 'Aún no has publicado nada.' : 'Este usuario no tiene publicaciones.'}</p>
+          ${isOwnProfile ? '<a href="home.html" class="btn-primary btn-sm">Ir al inicio</a>' : ''}
+        </div>`;
 
     if (canDelete) {
       container.querySelectorAll('.btn-post-menu').forEach(btn => {

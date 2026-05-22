@@ -7,7 +7,7 @@ const upload = require('../middleware/upload');
 router.get('/me/suggested', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(`
-      SELECT id, username, full_name, avatar, role
+      SELECT id, username, full_name, avatar, role, last_login
       FROM users
       WHERE id != ?
         AND is_active = TRUE
@@ -25,7 +25,7 @@ router.get('/me/suggested', verifyToken, async (req, res) => {
 router.get('/:username', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(
-      'SELECT id, email, username, full_name, role, avatar, bio, created_at FROM users WHERE username = ?',
+      'SELECT id, email, username, full_name, role, avatar, bio, last_login, created_at FROM users WHERE username = ?',
       [req.params.username]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
