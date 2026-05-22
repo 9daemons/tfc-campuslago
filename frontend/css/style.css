@@ -683,3 +683,262 @@ textarea { resize: vertical; }
   line-height: 1.9;
   margin-top: .5rem;
 }
+
+/* ── ADMIN PANEL ──────────────────────────────── */
+
+.admin-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.admin-page-header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.admin-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.admin-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-panel-title-row h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.admin-filters {
+  display: flex;
+  gap: .5rem;
+  flex: 1;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.admin-search {
+  flex: 1;
+  min-width: 160px;
+  max-width: 280px;
+  padding: .4rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: .85rem;
+}
+
+.admin-select {
+  padding: .4rem .6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: .85rem;
+  cursor: pointer;
+}
+
+.admin-select-sm {
+  padding: .3rem .5rem;
+  font-size: .8rem;
+}
+
+/* Pending request cards */
+
+.admin-request-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .85rem;
+  margin-bottom: .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.admin-request-info {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.admin-request-info strong {
+  font-size: .92rem;
+}
+
+.admin-request-actions {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* User rows */
+
+.admin-user-row {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: .75rem .5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-user-row:last-child { border-bottom: none; }
+
+.admin-user-suspended {
+  opacity: .55;
+}
+
+.admin-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.admin-user-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+}
+
+.admin-user-info strong {
+  font-size: .9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-user-actions {
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.text-muted-sm {
+  color: var(--text-muted);
+  font-size: .8rem;
+}
+
+.admin-empty {
+  color: var(--text-muted);
+  font-size: .88rem;
+  padding: .5rem 0;
+}
+
+/* Shared button variants */
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: .35rem .75rem;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background .15s;
+}
+
+.btn-secondary:hover { background: var(--border); }
+
+.btn-warning {
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  padding: .35rem .75rem;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.btn-warning:hover { background: #d97706; }
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+  border: none;
+  padding: .35rem .75rem;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.btn-success:hover { filter: brightness(.9); }
+
+/* PIN modal */
+
+.pin-display {
+  padding: .5rem 0;
+  text-align: center;
+}
+
+.pin-user-info {
+  font-size: .9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.pin-code {
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: .35em;
+  color: var(--primary);
+  background: var(--bg);
+  border-radius: 10px;
+  padding: .75rem 1.5rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pin-note {
+  font-size: .82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .admin-grid { grid-template-columns: 1fr; }
+  .admin-user-actions { gap: .25rem; }
+}
+
+@media (max-width: 600px) {
+  .admin-user-row { flex-wrap: wrap; }
+  .admin-user-actions { width: 100%; }
+}

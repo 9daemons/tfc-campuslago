@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de administración - Campus Lago</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="icon" href="assets/icon.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+</head>
+<body class="app-body">
+
+  <a href="#main-content" class="skip-nav">Saltar al contenido</a>
+
+  <nav class="navbar" aria-label="Navegación principal">
+    <div class="nav-left">
+      <a href="home.html" class="nav-brand">Campus Lago</a>
+    </div>
+    <div class="nav-center"></div>
+    <div class="nav-right">
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
+        <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
+      </a>
+    </div>
+  </nav>
+
+  <main class="admin-main" id="main-content">
+    <div class="admin-page-header">
+      <h1>Panel de administración</h1>
+      <a href="home.html" class="btn-secondary btn-sm">← Volver al inicio</a>
+    </div>
+
+    <div class="admin-grid">
+
+      <!-- Solicitudes pendientes -->
+      <section class="admin-panel" aria-label="Solicitudes de registro pendientes">
+        <div class="admin-panel-title-row">
+          <h2>Solicitudes pendientes</h2>
+          <span class="notif-badge hidden" id="pending-count" aria-label="solicitudes pendientes">0</span>
+        </div>
+        <div id="pending-list"><div class="loading">Cargando...</div></div>
+      </section>
+
+      <!-- Usuarios activos -->
+      <section class="admin-panel admin-panel-main" aria-label="Usuarios activos">
+        <div class="admin-panel-title-row">
+          <h2>Usuarios activos</h2>
+          <div class="admin-filters">
+            <input type="search" id="user-search" placeholder="Buscar nombre, usuario o email..." class="admin-search" aria-label="Buscar usuarios">
+            <select id="role-filter" class="admin-select" aria-label="Filtrar por rol">
+              <option value="">Todos los roles</option>
+              <option value="student">Alumnos</option>
+              <option value="teacher">Profesores</option>
+            </select>
+          </div>
+        </div>
+        <div id="users-list"><div class="loading">Cargando...</div></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Modal PIN -->
+  <div class="modal-overlay hidden" id="modal-pin" role="dialog" aria-modal="true" aria-labelledby="modal-pin-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-pin-title">PIN de recuperación</h3>
+        <button type="button" class="modal-close" id="btn-close-pin" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="pin-display">
+        <p id="pin-user-info" class="pin-user-info"></p>
+        <div class="pin-code" id="pin-code" aria-label="PIN generado"></div>
+        <p class="pin-note">Este PIN caduca en 15 minutos. Compártelo directamente con el usuario. Deberá ir a "¿Olvidaste la contraseña?" en la pantalla de inicio e introducir su email junto con este PIN para establecer una nueva contraseña.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

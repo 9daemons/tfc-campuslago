@@ -6,7 +6,15 @@ let activeCommentPostId = null;
 if (user) {
   document.getElementById('nav-avatar-img').src = avatarUrl(user.avatar);
   document.getElementById('nav-avatar-link').href = `profile.html?u=${user.username}`;
-  if (user.role === 'admin') document.getElementById('nav-messages').classList.add('hidden');
+  if (user.role === 'admin') {
+    document.getElementById('nav-messages').classList.add('hidden');
+    const adminLink = document.createElement('a');
+    adminLink.href = 'admin.html';
+    adminLink.className = 'btn-primary btn-sm';
+    adminLink.textContent = 'Panel admin';
+    adminLink.style.marginLeft = '.5rem';
+    document.querySelector('.feed-header')?.appendChild(adminLink);
+  }
 }
 
 const isAdmin = user?.role === 'admin';
