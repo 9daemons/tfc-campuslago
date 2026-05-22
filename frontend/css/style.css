@@ -6,7 +6,7 @@
   --text: #1e293b;
   --text-muted: #4a5568;
   --border: #e2e8f0;
-  --danger: #ef4444;
+  --danger: #dc2626;
   --success: #22c55e;
   --navbar-h: 56px;
   --mobile-nav-h: 56px;
@@ -551,7 +551,7 @@ textarea { resize: vertical; }
   padding: 1.5rem;
 }
 
-.footer-col h4 {
+.footer-col h3 {
   font-size: .85rem;
   font-weight: 700;
   color: var(--text);
@@ -580,7 +580,7 @@ textarea { resize: vertical; }
 }
 .footer-col > p:last-child { margin-bottom: 0; }
 
-.footer-legal { font-size: .75rem !important; opacity: .75; }
+.footer-legal { font-size: .75rem !important; color: var(--text-muted); }
 
 .footer-col details {
   border-bottom: 1px solid var(--border);
