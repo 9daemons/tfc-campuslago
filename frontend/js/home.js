@@ -34,7 +34,13 @@ async function loadUnifiedFeed() {
 
     container.innerHTML = all.length
       ? all.map(renderPost).join('')
-      : '<p class="loading">Sin publicaciones aún.</p>';
+      : `<div class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+          <p>Aún no hay publicaciones.</p>
+          <button class="btn-primary btn-sm" onclick="document.getElementById('btn-new-post').click()">Crear la primera</button>
+        </div>`;
 
     attachPostActions('feed-unified');
   } catch (e) {
@@ -85,6 +91,8 @@ function attachPostActions(containerId) {
 
   container.querySelectorAll('.btn-like').forEach(btn => {
     btn.addEventListener('click', async () => {
+      btn.classList.add('pop');
+      btn.addEventListener('animationend', () => btn.classList.remove('pop'), { once: true });
       try {
         const res = await apiFetch(`/posts/${btn.dataset.id}/like`, { method: 'POST' });
         btn.classList.toggle('liked', res.liked);
@@ -182,18 +190,59 @@ async function openComments(postId) {
   try {
     const comments = await apiFetch(`/posts/${postId}/comments`);
     list.innerHTML = comments.length
-      ? comments.map(c => `
-        <article class="post-card comment-card">
-          <div class="post-header">
-            <img src="${avatarUrl(c.avatar)}" alt="Avatar de ${escapeHtml(c.username)}" class="comment-avatar">
-            <div class="post-header-info">
-              <strong>${escapeHtml(c.username)}</strong>
-              <small>${timeAgo(c.created_at)}</small>
+      ? comments.map(c => {
+          const canDelete = c.user_id == user.id || user.role === 'admin';
+          return `
+          <article class="post-card comment-card" data-comment-id="${c.id}">
+            <div class="post-header">
+              <img src="${avatarUrl(c.avatar)}" alt="Avatar de ${escapeHtml(c.full_name || c.username)}" class="comment-avatar">
+              <div class="post-header-info">
+                <strong>${escapeHtml(c.full_name || c.username)}</strong>
+                <small>${timeAgo(c.created_at)}</small>
+              </div>
+              ${canDelete ? `<div class="post-header-menu">
+                <button type="button" class="btn-post-menu" aria-label="Opciones del comentario">⋯</button>
+                <div class="post-menu-dropdown hidden" role="menu">
+                  <button type="button" class="btn-delete-comment" data-id="${c.id}" data-post-id="${postId}" role="menuitem">Eliminar comentario</button>
+                </div>
+              </div>` : ''}
             </div>
-          </div>
-          <p class="post-content">${escapeHtml(c.content)}</p>
-        </article>`).join('')
-      : '<p class="loading">Sin comentarios aún.</p>';
+            <p class="post-content">${escapeHtml(c.content)}</p>
+          </article>`;
+        }).join('')
+      : `<div class="empty-state" style="padding:2rem 1rem">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <p>Sé el primero en comentar.</p>
+        </div>`;
+
+    list.querySelectorAll('.btn-post-menu').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const dropdown = btn.nextElementSibling;
+        document.querySelectorAll('.post-menu-dropdown').forEach(d => { if (d !== dropdown) d.classList.add('hidden'); });
+        dropdown.classList.toggle('hidden');
+      });
+    });
+
+    list.querySelectorAll('.btn-delete-comment').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.closest('.post-menu-dropdown').classList.add('hidden');
+        if (!confirm('¿Eliminar este comentario?')) return;
+        try {
+          await apiFetch(`/posts/${btn.dataset.postId}/comments/${btn.dataset.id}`, { method: 'DELETE' });
+          btn.closest('.comment-card').remove();
+          const commentBtn = document.querySelector(`.btn-comment[data-id="${btn.dataset.postId}"]`);
+          if (commentBtn) {
+            const count = parseInt(commentBtn.textContent.replace('💬', '').trim()) || 0;
+            const newCount = Math.max(0, count - 1);
+            commentBtn.innerHTML = `💬 ${newCount}`;
+            commentBtn.setAttribute('aria-label', `Comentarios, ${newCount}`);
+          }
+        } catch (e) { alert(e.message); }
+      });
+    });
   } catch (e) {
     list.innerHTML = `<p class="loading">${e.message}</p>`;
   }
@@ -342,6 +391,14 @@ async function loadAdminStats() {
   }
 }
 
+function onlineDot(lastLogin) {
+  if (!lastLogin) return '';
+  const diff = Date.now() - new Date(lastLogin).getTime();
+  if (diff < 3600000)      return '<span class="online-dot green" title="En línea"></span>';
+  if (diff < 86400000)     return '<span class="online-dot orange" title="Activo hoy"></span>';
+  return '';
+}
+
 async function loadSuggestedUsers() {
   const container = document.getElementById('suggested-users');
   if (!container) return;
@@ -355,7 +412,10 @@ async function loadSuggestedUsers() {
 
     container.innerHTML = candidates.map(u => `
       <div class="suggested-user">
-        <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.full_name || u.username)}">
+        <div class="avatar-wrap">
+          <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.full_name || u.username)}">
+          ${onlineDot(u.last_login)}
+        </div>
         <div class="suggested-user-info">
           <strong>${escapeHtml(u.full_name || u.username)}</strong>
           <small>@${escapeHtml(u.username)}</small>

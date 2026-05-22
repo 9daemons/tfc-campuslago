@@ -127,7 +127,7 @@ router.post('/:id/save', verifyToken, async (req, res) => {
 router.get('/:id/comments', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.execute(`
-      SELECT c.id, c.content, c.created_at, u.username, u.avatar, u.full_name
+      SELECT c.id, c.content, c.created_at, c.user_id, u.username, u.avatar, u.full_name
       FROM comments c JOIN users u ON c.user_id = u.id
       WHERE c.post_id = ? ORDER BY c.created_at ASC
     `, [req.params.id]);
@@ -146,6 +146,22 @@ router.post('/:id/comments', verifyToken, async (req, res) => {
       [req.params.id, req.user.id, content]
     );
     res.status(201).json({ id: result.insertId, message: 'Comentario añadido.' });
+  } catch (e) {
+    res.status(500).json({ error: 'Error.' });
+  }
+});
+
+router.delete('/:id/comments/:commentId', verifyToken, async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      'SELECT user_id FROM comments WHERE id = ? AND post_id = ?',
+      [req.params.commentId, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Comentario no encontrado.' });
+    if (rows[0].user_id !== req.user.id && req.user.role !== 'admin')
+      return res.status(403).json({ error: 'Sin permiso.' });
+    await db.execute('DELETE FROM comments WHERE id = ?', [req.params.commentId]);
+    res.json({ message: 'Comentario eliminado.' });
   } catch (e) {
     res.status(500).json({ error: 'Error.' });
   }
