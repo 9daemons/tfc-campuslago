@@ -43,6 +43,16 @@ async function loadUnifiedFeed() {
         </div>`;
 
     attachPostActions('feed-unified');
+
+    const targetPost = new URLSearchParams(window.location.search).get('post');
+    if (targetPost) {
+      const el = container.querySelector(`[data-id="${targetPost}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('post-highlight');
+        setTimeout(() => el.classList.remove('post-highlight'), 2000);
+      }
+    }
   } catch (e) {
     container.innerHTML = `<p class="loading">${e.message}</p>`;
   }
@@ -463,7 +473,7 @@ navSearch.addEventListener('input', () => {
           <img src="${avatarUrl(u.avatar)}" alt="Avatar de ${escapeHtml(u.username)}">
           <div><strong>${escapeHtml(u.username)}</strong><br><small>${escapeHtml(u.full_name || '')}</small></div>
         </div>`),
-        ...data.posts.map(p => `<div class="search-result-item" role="option">
+        ...data.posts.map(p => `<div class="search-result-item" role="option" onclick="window.location.href='home.html?post=${p.id}'">
           <img src="${avatarUrl(p.avatar)}" alt="Avatar de ${escapeHtml(p.username)}">
           <div><strong>${escapeHtml(p.username)}</strong><br><small>${escapeHtml(p.content?.substring(0, 60) || '')}</small></div>
         </div>`)
