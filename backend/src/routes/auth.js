@@ -96,11 +96,7 @@ router.post('/forgot-password', async (req, res) => {
     );
 
     const [[u]] = await db.execute('SELECT full_name FROM users WHERE id = ?', [rows[0].id]);
-    try {
-      await sendPinEmail(email, u?.full_name, pin);
-    } catch (mailErr) {
-      console.error('Email error:', mailErr.message);
-    }
+    sendPinEmail(email, u?.full_name, pin).catch(err => console.error('Email error:', err.message));
 
     res.json({ message: 'Si el email existe, recibirás un PIN.' });
   } catch (e) {
