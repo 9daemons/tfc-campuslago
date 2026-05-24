@@ -286,14 +286,14 @@ document.getElementById('form-comment').addEventListener('submit', async (e) => 
 async function loadNotifications() {
   try {
     const notifs = await apiFetch('/notifications');
-    const unread = notifs.filter(n => !n.is_read).length;
+    const unread = notifs.filter(n => !n.is_read);
     const badge = document.getElementById('notif-count');
-    badge.textContent = unread;
-    badge.classList.toggle('hidden', unread === 0);
+    badge.textContent = unread.length;
+    badge.classList.toggle('hidden', unread.length === 0);
 
-    document.getElementById('notif-list').innerHTML = notifs.length
-      ? notifs.map(n => `<div class="notif-item ${n.is_read ? '' : 'unread'}">${escapeHtml(n.message)}<br><small>${timeAgo(n.created_at)}</small></div>`).join('')
-      : '<div class="notif-item">Sin notificaciones.</div>';
+    document.getElementById('notif-list').innerHTML = unread.length
+      ? unread.map(n => `<div class="notif-item unread">${escapeHtml(n.message)}<br><small>${timeAgo(n.created_at)}</small></div>`).join('')
+      : '<div class="notif-item">Sin notificaciones nuevas.</div>';
   } catch {}
 }
 
