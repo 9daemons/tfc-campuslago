@@ -9,7 +9,7 @@ function initThemeToggle() {
   if (!btn) return;
 
   function update(isDark) {
-    btn.textContent = isDark ? '☀️' : '🌙';
+    btn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     btn.title = isDark ? 'Modo claro' : 'Modo oscuro';
   }
 

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="icon" href="assets/icon.ico">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <script src="js/theme.js"></script>
 </head>
 <body class="app-body">
@@ -26,9 +27,9 @@
       <input type="search" id="nav-search" placeholder="Buscar..." class="nav-search-input" aria-label="Buscar usuarios o publicaciones">
     </div>
     <div class="nav-right">
-      <a href="messages.html" class="nav-icon" id="nav-messages" title="Mensajes" aria-label="Mensajes">✉</a>
-      <button type="button" class="nav-icon" id="btn-notif" title="Notificaciones" aria-label="Notificaciones">🔔<span class="notif-badge hidden" id="notif-count">0</span></button>
-      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema">🌙</button>
+      <a href="messages.html" class="nav-icon" id="nav-messages" title="Mensajes" aria-label="Mensajes"><i class="fa-solid fa-envelope"></i></a>
+      <button type="button" class="nav-icon" id="btn-notif" title="Notificaciones" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i><span class="notif-badge hidden" id="notif-count">0</span></button>
+      <button type="button" class="nav-icon" id="btn-theme" title="Modo oscuro" aria-label="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
       <a href="profile.html" id="nav-avatar-link" class="nav-avatar" aria-label="Mi perfil">
         <img src="assets/default-avatar.svg" id="nav-avatar-img" alt="Mi avatar">
       </a>
@@ -128,10 +129,10 @@
 
   <!-- Mobile bottom nav -->
   <nav class="mobile-nav" aria-label="Navegación inferior">
-    <a href="home.html" class="mobile-nav-item active" aria-label="Inicio" aria-current="page">🏠</a>
-    <a href="search.html" class="mobile-nav-item" aria-label="Buscar">🔍</a>
-    <a href="messages.html" class="mobile-nav-item" aria-label="Mensajes">✉</a>
-    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil">👤</a>
+    <a href="home.html" class="mobile-nav-item active" aria-label="Inicio" aria-current="page"><i class="fa-solid fa-house"></i></a>
+    <a href="search.html" class="mobile-nav-item" aria-label="Buscar"><i class="fa-solid fa-magnifying-glass"></i></a>
+    <a href="messages.html" class="mobile-nav-item" aria-label="Mensajes"><i class="fa-solid fa-envelope"></i></a>
+    <a href="profile.html" class="mobile-nav-item" aria-label="Perfil"><i class="fa-solid fa-user"></i></a>
   </nav>
 
   <!-- Modal nuevo post -->
@@ -139,7 +140,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="modal-post-title">Nuevo post</h3>
-        <button type="button" class="modal-close" id="btn-close-post" aria-label="Cerrar">✕</button>
+        <button type="button" class="modal-close" id="btn-close-post" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form id="form-post">
         <div class="form-group">
@@ -148,7 +149,7 @@
         </div>
         <div class="form-group">
           <label class="file-label" for="post-image">
-            📷 Añadir imagen
+            <i class="fa-solid fa-camera"></i> Añadir imagen
             <input type="file" id="post-image" accept="image/*" class="hidden">
           </label>
           <img id="post-image-preview" class="hidden" alt="Vista previa de la imagen seleccionada">
@@ -170,7 +171,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="modal-comments-title">Comentarios</h3>
-        <button type="button" class="modal-close" id="btn-close-comments" aria-label="Cerrar">✕</button>
+        <button type="button" class="modal-close" id="btn-close-comments" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="comments-list"></div>
       <form id="form-comment" class="comment-form">

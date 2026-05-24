@@ -71,7 +71,7 @@ async function openConversation(id) {
   const panel = document.getElementById('chat-panel');
   panel.innerHTML = `
     <div class="chat-header" id="chat-header">
-      <button class="chat-back-btn" id="btn-chat-back" aria-label="Volver a conversaciones">←</button>
+      <button class="chat-back-btn" id="btn-chat-back" aria-label="Volver a conversaciones"><i class="fa-solid fa-arrow-left"></i></button>
       <span id="chat-header-name">Cargando...</span>
     </div>
     <div class="chat-messages" id="chat-messages"></div>
@@ -186,7 +186,7 @@ function renderSelectedUsers() {
   document.getElementById('selected-users').innerHTML = selectedUsers.map(u => `
     <div class="selected-user-chip" data-id="${u.id}">
       ${escapeHtml(u.name)}
-      <button data-id="${u.id}" aria-label="Quitar a ${escapeHtml(u.name)}">✕</button>
+      <button data-id="${u.id}" aria-label="Quitar a ${escapeHtml(u.name)}"><i class="fa-solid fa-xmark"></i></button>
     </div>`).join('');
 
   document.querySelectorAll('.selected-user-chip button').forEach(btn => {
