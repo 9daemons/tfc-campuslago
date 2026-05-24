@@ -9,6 +9,16 @@ if (user) {
   if (user.role === 'admin') {
     document.getElementById('nav-messages').classList.add('hidden');
   }
+  const sidebarCard = document.getElementById('sidebar-user-card');
+  if (sidebarCard) {
+    sidebarCard.innerHTML = `<a href="profile.html?u=${escapeHtml(user.username)}" class="sidebar-user-link">
+      <img src="${avatarUrl(user.avatar)}" alt="Mi avatar">
+      <div>
+        <strong>${escapeHtml(user.full_name || user.username)}</strong>
+        <small>@${escapeHtml(user.username)}</small>
+      </div>
+    </a>`;
+  }
 }
 
 const isAdmin = user?.role === 'admin';
@@ -69,7 +79,7 @@ function renderPost(p) {
 
   return `
   <article class="post-card${isOfficial ? ' official' : ''}" data-id="${p.id}">
-    ${isOfficial ? '<span class="post-official-label">📢 Noticia del centro</span>' : ''}
+    ${isOfficial ? '<span class="post-official-label"><i class="fa-solid fa-bullhorn"></i> Noticia del centro</span>' : ''}
     <div class="post-header">
       <img src="${av}" alt="Avatar de ${escapeHtml(name)}">
       <div class="post-header-info">
@@ -77,7 +87,7 @@ function renderPost(p) {
         <small>${timeAgo(p.created_at)}</small>
       </div>
       ${isOwn ? `<div class="post-header-menu">
-        <button type="button" class="btn-post-menu" data-id="${p.id}" aria-label="Opciones del post">⋯</button>
+        <button type="button" class="btn-post-menu" data-id="${p.id}" aria-label="Opciones del post"><i class="fa-solid fa-ellipsis"></i></button>
         <div class="post-menu-dropdown hidden" role="menu">
           <button type="button" class="btn-delete-post" data-id="${p.id}" role="menuitem">Eliminar post</button>
         </div>
@@ -87,10 +97,10 @@ function renderPost(p) {
     ${p.image_url ? `<img class="post-image" src="${avatarUrl(p.image_url)}" alt="Imagen del post de ${escapeHtml(name)}">` : ''}
     <div class="post-actions">
       <button type="button" class="post-action-btn btn-like ${p.liked ? 'liked' : ''}" data-id="${p.id}" aria-label="Me gusta, ${p.likes_count}">
-        ❤ <span class="like-count">${p.likes_count}</span>
+        <i class="fa-solid fa-heart"></i> <span class="like-count">${p.likes_count}</span>
       </button>
       <button type="button" class="post-action-btn btn-comment" data-id="${p.id}" aria-label="Comentarios, ${p.comments_count}">
-        💬 ${p.comments_count}
+        <i class="fa-solid fa-comment"></i> ${p.comments_count}
       </button>
     </div>
   </article>`;
@@ -211,7 +221,7 @@ async function openComments(postId) {
                 <small>${timeAgo(c.created_at)}</small>
               </div>
               ${canDelete ? `<div class="post-header-menu">
-                <button type="button" class="btn-post-menu" aria-label="Opciones del comentario">⋯</button>
+                <button type="button" class="btn-post-menu" aria-label="Opciones del comentario"><i class="fa-solid fa-ellipsis"></i></button>
                 <div class="post-menu-dropdown hidden" role="menu">
                   <button type="button" class="btn-delete-comment" data-id="${c.id}" data-post-id="${postId}" role="menuitem">Eliminar comentario</button>
                 </div>
