@@ -88,10 +88,10 @@ INSERT INTO posts (user_id, content, post_type, is_anonymous) VALUES
 (@admin, 'Mensaje de prueba', 'official', 1);
 
 INSERT INTO posts (user_id, content, post_type) VALUES
-(@ana,    'Recordad que el plazo de entrega de la práctica 2 de Bases de Datos es el viernes a las 23:59h. Sin excepciones.', 'student'),
-(@ana,    'El examen de Programación del martes queda aplazado al miércoles a las 10:00h. Consultad el tablón para el aula.', 'student'),
-(@rafael, 'Los ejercicios de repaso del tema 4 están disponibles en el aula virtual. Se recomienda hacerlos antes del jueves.', 'student'),
-(@pilar,  'La tutoría de esta tarde queda aplazada al lunes de la semana que viene. Disculpad las molestias.', 'student');
+(@ana,    'Hola', 'student'),
+(@ana,    'Test', 'student'),
+(@rafael, 'Mensaje de prueba', 'student'),
+(@pilar,  '¿Qué tal?', 'student');
 
 -- Posts adicionales para mayor variedad en el feed
 INSERT INTO posts (user_id, content, post_type) VALUES

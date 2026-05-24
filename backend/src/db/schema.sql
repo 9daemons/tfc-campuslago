@@ -134,6 +134,6 @@ VALUES (
   'admin@educa.madrid.org',
   'admin',
   '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-  'Administrador',
+  'IES El Lago',
   'admin'
 );
