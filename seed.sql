@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 USE campus_lago;
 
 -- ============================================================
@@ -63,44 +65,48 @@ UPDATE users SET bio = 'Profesora de Lengua y Literatura. Tutora de 2º DAW.' WH
 -- POSTS
 -- ============================================================
 INSERT INTO posts (user_id, content, post_type) VALUES
-(@laura,  '¿Alguien ha entendido el ejercicio 3 de la hoja de repaso de Matemáticas? Llevo media hora bloqueada.', 'student'),
-(@laura,  'Subiendo los apuntes de Bases de Datos de hoy por si alguien los necesita. Por mensajes os los paso.', 'student'),
-(@carlos, 'Por fin terminé el proyecto de programación. Qué tarde más larga...', 'student'),
-(@carlos, '¿Alguien se apunta a estudiar en la biblioteca mañana a las 16h? Tengo el parcial pasado mañana.', 'student'),
-(@alex,   'Primera semana de ASIR y ya tengo deberes de tres asignaturas. Bienvenido a la fiesta.', 'student'),
-(@alex,   'Pregunta para los de 2º: ¿el examen de Redes del año pasado era muy difícil?', 'student'),
-(@maria,  'Buscando compañeros para estudiar el examen de la semana que viene. El aula 3 tiene sitio por las tardes.', 'student'),
-(@pablo,  'Trabajo todo el día, llego a casa, estudio hasta la una... pero merece la pena. Ánimo a todos los que estáis igual.', 'student'),
-(@pablo,  '¿Alguien sabe qué IDE prefiere Rafael Muñoz para las prácticas de Java? No lo puso en el enunciado.', 'student'),
-(@sara,   '¡Primer día aquí! Todavía un poco perdida entre tantas clases y horarios. Espero pillarle el truco pronto.', 'student'),
-(@miguel, 'Nadie me avisó de que configurar RAID en el servidor de prácticas iba a ser tan entretenido. Llevo dos horas.', 'student'),
-(@elena,  'Acabo de descubrir que puedo usar variables CSS para el proyecto de interfaces. Por qué no lo sabía antes.', 'student'),
-(@elena,  'Reunión de grupo para la práctica de DAW mañana a las 17:30 en el aula de informática. Confirmad asistencia.', 'student'),
-(@david,  'El recreo bajo la lluvia ya es tradición aquí. ¿Cuándo van a arreglar la zona cubierta?', 'student'),
-(@lucia,  'Empezando a estudiar criptografía por mi cuenta. Si alguien quiere hacer un grupo de estudio que me escriba.', 'student'),
-(@javier, 'Dos horas mirando un error de DNS y resulta que era un punto y coma de más en el archivo de zona. La vida.', 'student'),
-(@andrea, 'Vengo del diseño gráfico y el CSS me parece magia. ¿Cómo le ponéis nombre a las variables de color?');
+(@laura,  'Hola', 'student'),
+(@laura,  'Mensaje de prueba', 'student'),
+(@carlos, 'Test', 'student'),
+(@carlos, '¿Qué tal?', 'student'),
+(@alex,   'Hola a todos', 'student'),
+(@alex,   'Mensaje de prueba', 'student'),
+(@maria,  'Test', 'student'),
+(@pablo,  'Hola', 'student'),
+(@pablo,  '¿Qué tal?', 'student'),
+(@sara,   'Mensaje de prueba', 'student'),
+(@miguel, 'Test', 'student'),
+(@elena,  'Hola', 'student'),
+(@elena,  'Mensaje de prueba', 'student'),
+(@david,  '¿Qué tal?', 'student'),
+(@lucia,  'Test', 'student'),
+(@javier, 'Hola', 'student'),
+(@andrea, 'Mensaje de prueba', 'student');
 
 INSERT INTO posts (user_id, content, post_type, is_anonymous) VALUES
-(@ana,    'Recordad que el plazo de entrega de la práctica 2 de Bases de Datos es el viernes a las 23:59h. Sin excepciones.', 'official', 1),
-(@ana,    'El examen de Programación del martes queda aplazado al miércoles a las 10:00h. Consultad el tablón para el aula.', 'official', 0),
-(@rafael, 'Los ejercicios de repaso del tema 4 están disponibles en el aula virtual. Se recomienda hacerlos antes del jueves.', 'official', 1),
-(@pilar,  'La tutoría de esta tarde queda aplazada al lunes de la semana que viene. Disculpad las molestias.', 'official', 0);
+(@admin, 'Test', 'official', 1),
+(@admin, 'Mensaje de prueba', 'official', 1);
+
+INSERT INTO posts (user_id, content, post_type) VALUES
+(@ana,    'Recordad que el plazo de entrega de la práctica 2 de Bases de Datos es el viernes a las 23:59h. Sin excepciones.', 'student'),
+(@ana,    'El examen de Programación del martes queda aplazado al miércoles a las 10:00h. Consultad el tablón para el aula.', 'student'),
+(@rafael, 'Los ejercicios de repaso del tema 4 están disponibles en el aula virtual. Se recomienda hacerlos antes del jueves.', 'student'),
+(@pilar,  'La tutoría de esta tarde queda aplazada al lunes de la semana que viene. Disculpad las molestias.', 'student');
 
 -- Posts adicionales para mayor variedad en el feed
 INSERT INTO posts (user_id, content, post_type) VALUES
-(@david,   'test', 'student'),
-(@lucia,   'test', 'student'),
-(@javier,  'test', 'student'),
-(@andrea,  'test', 'student'),
-(@miguel,  'test', 'student'),
-(@sara,    'test', 'student'),
-(@pablo,   'test', 'student'),
-(@maria,   'test', 'student'),
-(@elena,   'test', 'student'),
-(@carlos,  'test', 'student'),
-(@laura,   'test', 'student'),
-(@alex,    'test', 'student');
+(@david,   'Hola', 'student'),
+(@lucia,   '¿Qué tal?', 'student'),
+(@javier,  'Mensaje de prueba', 'student'),
+(@andrea,  'Test', 'student'),
+(@miguel,  'Hola', 'student'),
+(@sara,    'Mensaje de prueba', 'student'),
+(@pablo,   '¿Qué tal?', 'student'),
+(@maria,   'Test', 'student'),
+(@elena,   'Hola', 'student'),
+(@carlos,  'Mensaje de prueba', 'student'),
+(@laura,   'Test', 'student'),
+(@alex,    '¿Qué tal?', 'student');
 
 -- ============================================================
 -- VARIABLES DE POSTS (para likes y comentarios)
