@@ -509,6 +509,29 @@ textarea { resize: vertical; }
 /* search page */
 
 .search-main { max-width: 700px; margin: 1.5rem auto; padding: 0 1rem; }
+
+.mobile-search-bar {
+  display: none;
+  margin-bottom: 1.2rem;
+}
+.mobile-search-bar input {
+  width: 100%;
+  padding: .8rem 1.1rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--card-bg);
+  color: var(--text);
+  transition: border-color .2s;
+}
+.mobile-search-bar input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+@media (max-width: 700px) {
+  .mobile-search-bar { display: block; }
+}
 .search-section { margin-bottom: 1.5rem; }
 .search-section h2 { font-size: 1rem; margin-bottom: .8rem; color: var(--text-muted); }
 .search-empty { text-align: center; color: var(--text-muted); padding: 3rem; }

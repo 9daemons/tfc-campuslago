@@ -7,9 +7,24 @@ if (user) {
 }
 
 let searchTimeout;
-document.getElementById('search-input').addEventListener('input', () => {
+
+function getQuery() {
+  const mobile = document.getElementById('search-input-mobile');
+  const desktop = document.getElementById('search-input');
+  // Usar el que tenga valor, priorizando el visible
+  if (mobile && mobile.offsetParent !== null) return mobile.value.trim();
+  return desktop ? desktop.value.trim() : '';
+}
+
+function onSearchInput() {
   clearTimeout(searchTimeout);
-  const q = document.getElementById('search-input').value.trim();
+  const q = getQuery();
+
+  // Sincronizar ambos inputs
+  const mobile = document.getElementById('search-input-mobile');
+  const desktop = document.getElementById('search-input');
+  if (mobile && document.activeElement !== mobile && mobile.value !== (desktop?.value ?? '')) mobile.value = desktop?.value ?? '';
+  if (desktop && document.activeElement !== desktop && desktop.value !== (mobile?.value ?? '')) desktop.value = mobile?.value ?? '';
 
   if (!q || q.length < 2) {
     document.getElementById('search-results-users').classList.add('hidden');
@@ -21,7 +36,10 @@ document.getElementById('search-input').addEventListener('input', () => {
   }
 
   searchTimeout = setTimeout(() => performSearch(q), 300);
-});
+}
+
+document.getElementById('search-input')?.addEventListener('input', onSearchInput);
+document.getElementById('search-input-mobile')?.addEventListener('input', onSearchInput);
 
 async function performSearch(q) {
   document.title = `Búsqueda: "${q}" - Campus Lago`;
@@ -82,6 +100,9 @@ async function performSearch(q) {
 
 const urlParam = new URLSearchParams(window.location.search).get('q');
 if (urlParam && urlParam.length >= 2) {
-  document.getElementById('search-input').value = urlParam;
+  const desktop = document.getElementById('search-input');
+  const mobile = document.getElementById('search-input-mobile');
+  if (desktop) desktop.value = urlParam;
+  if (mobile) mobile.value = urlParam;
   performSearch(urlParam);
 }
